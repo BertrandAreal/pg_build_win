@@ -79,13 +79,14 @@ version.
 	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x86-296175.msi /qb /passive PERL_PATH=No PERL_EXT=No
 	start /wait ActiveTcl8.5.12.0.296033-win32-ix86-threaded.exe --directory %SystemDrive%\TCL_85_x86
 	start /wait ActiveTcl8.5.12.0.296033-win32-x86_64-threaded.exe --directory %SystemDrive%\TCL_85_x64
-	start /wait msiexec /i python-2.7.3.amd64.msi /qb /passive TARGETDIR=c:\Python27_x64 ALLUSERS=1
-	start /wait msiexec /i python-2.7.3.msi /qb /passive TARGETDIR=c:\Python27_x86 ALLUSERS=1
-	start /wait msiexec /i python-3.3.0.amd64.msi /qb /passive TARGETDIR=c:\Python33_x64 ALLUSERS=1
+	start /wait msiexec /i python-2.7.3.amd64.msi /qb /passive TARGETDIR=%SystemDrive%\Python27_x64 ALLUSERS=1
+	start /wait msiexec /i python-2.7.3.msi /qb /passive TARGETDIR=%SystemDrive%\Python27_x86 ALLUSERS=1
+	start /wait msiexec /i python-3.3.0.amd64.msi /qb /passive TARGETDIR=%SystemDrive%\Python33_x64 ALLUSERS=1
+	start /wait msiexec /i python-3.3.0.msi /qb /passive TARGETDIR=%SystemDrive%\Python33_x64 ALLUSERS=1
 	
 If you downloaded the offline install ISO for the Windows SDK, you can install it with:
 
-	"c:\Program Files\7-Zip\7z.exe" x -owinsdk GRMSDKX_EN_DVD.iso
+	"%PROGRAMFILES%\7-Zip\7z.exe" x -owinsdk GRMSDKX_EN_DVD.iso
 	start /wait winsdk\setup.exe -q -params:ADDLOCAL=ALL
 	rd /s /q winsdk
 	
@@ -94,6 +95,7 @@ If you downloaded the offline install ISO for the Windows SDK, you can install i
 Optionally also install notepad++:
 
 	start /wait npp.6.2.2.Installer.exe /S
+
 
 Configure the build
 ===================
@@ -169,3 +171,12 @@ CLEANING:
 
 * clean - remove built libraries and clean PostgreSQL working tree
 * really-clean: Remove built libraries and downloaded files, delete PostgreSQL checkout and working tree
+
+RELEVANT DOCUMENTATION
+======================
+
+Compiling PostgreSQL from source on Windows: http://www.postgresql.org/docs/current/static/install-windows.html
+Windows SDK unattended: http://support.microsoft.com/kb/2498225
+ActivePerl unattended: http://docs.activestate.com/activeperl/5.16/install.html
+ActiveTCL unattended: http://community.activestate.com/faq/unattended-installation-a
+Python unattended: http://www.python.org/download/releases/2.5/msi/
