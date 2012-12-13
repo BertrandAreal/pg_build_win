@@ -10,30 +10,74 @@ Python 2, MinGW, git (from git-scm.org), and the Microsoft SDK 7.1 to use these
 scripts. Instructions on unattended installs for these tools are coming shortly;
 just need to copy them from another machine.
 
-Install minGW:
-==============
+Download Windows SDK 7.1
+========================
 
-  http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
-  
-You need this even for MSVC builds because you need the "flex" executable
-from it to build on x64; the version provided on the PostgreSQL site doesn't
-run on win64.
+You can download the SDK from:
+ http://www.microsoft.com/en-us/download/details.aspx?id=8279 (web installer)
+or
+ http://www.microsoft.com/en-us/download/details.aspx?id=8442 (offline installers ISOs).
 
-These tools also require bison, wget and touch from mingw, since it must be 
-available already.
+If using the offline installer, get GRMSDKX_EN_DVD.iso for x64 or 
+GRMSDK_EN_DVD.iso for x86. You don't need to burn a CD to install it, 
+see below for instructions.
 
-All these tools come with msysgit too, so a future version may support using
-msysgit instead of MinGW.
-
-Install the Windows SDK
+Download required tools
 =======================
 
-[docs need to be copied from another machine; pending]
+Some of this will be automated later, but for now you must download the following
+required tools. Don't install them; see below for that.
+  
+* ActiveState TCL x64 and x86 from http://www.activestate.com/activetcl/downloads
+* ActiveState Perl x86 and x64 from http://www.activestate.com/activeperl/downloads
+* Python.org python 2.7 and 3.3, both in x86 and x64 versions from http://python.org
+* mingw-get-inst from http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
+* git from http://git-scm.com/download/win
+* 7-zip from http://www.7-zip.org/download.html
 
-Install Perl, Python and TCL
-============================
+You need MinGW even for MSVC builds because you need the "flex" executable
+from it to build on x64; the version provided on the PostgreSQL site doesn't
+run on win64. These scripts also use bison, wget and touch from mingw. All 
+these tools come with msysgit too, so a future version may support using
+msysgit instead of MinGW.
 
-[docs need to be copied from another machine; pending]
+I also recommend:
+* notepad++ from http://http://notepad-plus-plus.org/download/
+
+Install the tools
+=================
+
+Open a command prompt and cd to the location you downloaded all the above tools to.
+
+Now use the following commands to install the tools. On Windows the command prompt
+doesn't wait until a spawned command completes; you can use "start /WAIT" to launch
+them and wait, but it won't work with all installers.
+
+You will need to adjust the file names to reflect the exact files you downloaded.
+
+	start /wait mingw-get-inst-20120426.exe /silent
+	c:\MinGW\bin\mingw-get.exe install msys-flex msys-bison g++ gdb mingw32-make msys-base
+	start /wait msiexec /i 7z920-x64.msi /qb /passive /norestart
+	start /wait Git-1.8.0-preview20121022.exe /silent
+	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x64-296175.msi /qb /passive PERL_PATH=Yes PERL_EXT=Yes
+	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x86-296175.msi /qb /passive PERL_PATH=No PERL_EXT=No
+	start /wait ActiveTcl8.5.12.0.296033-win32-ix86-threaded.exe --directory %SystemDrive%\TCL_85_x86
+	start /wait ActiveTcl8.5.12.0.296033-win32-x86_64-threaded.exe --directory %SystemDrive%\TCL_85_x64
+	start /wait msiexec /i python-2.7.3.amd64.msi /qb /passive TARGETDIR=c:\Python27_x64 ALLUSERS=1
+	start /wait msiexec /i python-2.7.3.msi /qb /passive TARGETDIR=c:\Python27_x86 ALLUSERS=1
+	start /wait msiexec /i python-3.3.0.amd64.msi /qb /passive TARGETDIR=c:\Python33_x64 ALLUSERS=1
+	
+If you downloaded the offline install ISO for the Windows SDK, you can install it with:
+
+	"c:\Program Files\7-Zip\7z.exe" x -owinsdk GRMSDKX_EN_DVD.iso
+	start /wait winsdk\setup.exe -q -params:ADDLOCAL=ALL
+	rd /s /q winsdk
+	
+(Change GRMSDKX_EN_DVD.iso to GRMSDK_EN_DVD.iso if you're on x64) 
+
+Optionally also install notepad++:
+
+	start /wait npp.6.2.2.Installer.exe /S
 
 Configure the build
 ===================
