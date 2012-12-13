@@ -53,3 +53,12 @@ $(ZLIB_BINDIR)\lib\zdll.lib: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\lib md $(ZLIB_BINDIR)\lib
 	copy /Y /B  $(ZLIB_SRCDIR)\zdll.lib  $(ZLIB_BINDIR)\lib\zdll.lib >NUL
 	@$(TOUCH) $(ZLIB_BINDIR)\lib\zdll.lib
+
+zlib: $(ZLIB_OBJS)
+
+zlib-clean:
+	IF EXIST $(ZLIB_BINDIR) rd /s /q $(ZLIB_BINDIR)
+	IF EXIST $(ZLIB_SRCDIR) rd /s /q $(ZLIB_SRCDIR)
+	
+zlib-really-clean: zlib-clean
+	IF EXIST $(ZLIB_ARCHIVE) del $(ZLIB_ARCHIVE)

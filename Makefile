@@ -42,18 +42,20 @@ TCLDIR=$(TCL_X64)
 !ERROR "Unrecognised target cpu $(TARGET_CPU)
 !ENDIF
 
-default: all
+default: postgresql
 
 $(WGET) $(BISON) $(FLEX) $(TOUCH):
 	$(MINGW)\bin\mingw-get install msys msys-wget msys-bison msys-flex
 	
+phony:
+
 !INCLUDE zlib.mak
 !INCLUDE configpl.mak
-!INCLUDE postgres.mak
+!INCLUDE postgresql.mak
 
-all: $(ZLIB_OBJS) $(FLEX) $(BISON)
-
-clean:
-	@-rd /s /q $(LIBBUILDDIR)
-	@-rd /s /q $(PGBUILDDIR)
-	@-del $(CONFIG_PL) $(BUILDENV_PL)
+clean: zlib-clean postgresql-clean
+	IF EXIST $(LIBBUILDDIR) rd /s /q $(LIBBUILDDIR)
+	
+really-clean: clean zlib-really-clean
+	IF EXIST $(PGBUILDDIR) rd /s /q $(PGBUILDDIR)
+	
