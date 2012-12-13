@@ -33,6 +33,12 @@ Download required tools
 
 Some of this will be automated later, but for now you must download the following
 required tools. Don't install them; see below for that.
+
+All these instructions assume you're on a 64-bit windows install. If you're on 32-bit, don't
+bother downloading the 64-bit installers and omit all steps that refer to them. These instructions
+and scripts are NOT TESTED on 32-bit windows, only on 64-bit Windows 7 and Windows Server 2008 R2.
+
+Download:
   
 * ActiveState TCL x64 and x86 from http://www.activestate.com/activetcl/downloads
 * ActiveState Perl x86 and x64 from http://www.activestate.com/activeperl/downloads
@@ -60,6 +66,10 @@ doesn't wait until a spawned command completes; you can use "start /WAIT" to lau
 them and wait, but it won't work with all installers.
 
 You will need to adjust the file names to reflect the exact files you downloaded.
+
+If you're on a 32-bit platform, omit the lines for 64-bit programs and for Perl, use 
+PERL_PATH=Yes PERL_EXT=Yes for the 32-bit version since you aren't installing the 64-bit
+version.
 
 	start /wait mingw-get-inst-20120426.exe /silent
 	c:\MinGW\bin\mingw-get.exe install msys-flex msys-bison g++ gdb mingw32-make msys-base
