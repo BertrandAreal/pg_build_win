@@ -14,10 +14,7 @@ postgresql: $(FLEX) $(BISON) zlib $(PGBUILDDIR)\$(PG_BRANCH) $(CONFIG_PL) $(BUIL
 	"$(PERL_CMD)" build.pl
 	
 postgresql-clean:
-	IF EXIST $(PGBUILDDIR)\$(PG_BRANCH) (
-		cd $(PGBUILDDIR)\$(PG_BRANCH)
-		"$(GIT)" clean -fdx
-	)
+	IF EXIST $(PGBUILDDIR)\$(PG_BRANCH)\.git\HEAD ( cd $(PGBUILDDIR)\$(PG_BRANCH) &&  "$(GIT)" clean -fdx )
 
 postgresql-check: postgresql
 	cd $(PGBUILDDIR)\$(PG_BRANCH)\src\tools\msvc

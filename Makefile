@@ -6,6 +6,7 @@
 #  http://msdn.microsoft.com/en-us/library/7y32zxwh(v=vs.80).aspx
 
 !INCLUDE settings.mak
+!INCLUDE settings-defaults.mak
 
 !IFNDEF TARGET_CPU
 !ERROR "TARGET_CPU is not set. Did you run vcvars or setenv?"
@@ -57,5 +58,6 @@ clean: zlib-clean postgresql-clean
 	IF EXIST $(LIBBUILDDIR) rd /s /q $(LIBBUILDDIR)
 	
 really-clean: clean zlib-really-clean
-	IF EXIST $(PGBUILDDIR) rd /s /q $(PGBUILDDIR)
+	IF EXIST $(LIBDIR) rd /s /q $(LIBDIR)
+	IF EXIST $(PGDIR) rd /s /q $(PGDIR)
 	
