@@ -22,6 +22,12 @@ If using the offline installer, get GRMSDKX_EN_DVD.iso for x64 or
 GRMSDK_EN_DVD.iso for x86. You don't need to burn a CD to install it, 
 see below for instructions.
 
+You must already have .NET 4 client profile installed to be able to run the 
+Windows SDK offline installer. It's installed by default on Windows 7 and
+Win2k8 R2 but must be installed manually for older platforms. Get it here:
+
+ http://www.microsoft.com/en-us/download/details.aspx?id=24872
+
 Download required tools
 =======================
 
