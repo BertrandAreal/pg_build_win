@@ -115,7 +115,7 @@ the dependencies that the build scripts manage for you, eg:
 
 	LIBDIR=\where\to\put\libraries
 
-Anything inside LIBDIR will be deleted by "nmake reallyclean"
+Anything inside LIBDIR will be deleted by "nmake really-clean"
 
 Automatic PostgreSQL source trees - USE_GIT
 -------------------------------------------
@@ -131,7 +131,7 @@ your builds for you under PGDIR. Eg:
 	PG_GIT_URL=c:\postgresql-git-bare-mirror
 	PG_BRANCH=master
 
-Anything inside PGDIR will be deleted by "nmake reallyclean". The source tree will be
+Anything inside PGDIR will be deleted by "nmake really-clean". The source tree will be
 reset using "git clean -fdx" when you "nmake clean" or "nmake postgresql-clean", so don't
 do work in the script-managed PostgreSQL trees; either push to a branch and have the tools
 build the branch, or manually manage the source tree (see below).
@@ -186,7 +186,7 @@ If you like, you can create LIBDIR\pkg and copy the source archives from
 somewhere yourself for offline use. The filenames the build scripts look
 for are specified in settings-default.mak and can be overridden in settings.mak.
 
-Be warned that "nmake reallyclean" will delete LIBDIR and its contents,
+Be warned that "nmake really-clean" will delete LIBDIR and its contents,
 including any source packages you put there.
 	
 SET UP VISUAL STUDIO ENVIRONMENT
