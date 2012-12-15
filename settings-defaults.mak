@@ -9,17 +9,25 @@ LIBDIR=\pg\libs
 !IFNDEF PKGDIR
 PKGDIR=$(LIBDIR)\pkg
 !ENDIF
-!IFNDEF PGDIR
-PGDIR=\pg\postgresql
-!ENDIF
+
+# These settings only apply if USE_GIT is set
+!IFDEF USE_GIT
 
 !IFNDEF PG_GIT_URL
-PG_GIT_URL=\pg\postgresql-git
+!ERROR If USE_GIT is set, you must set PG_GIT_URL so we know where to get sources from. See the README.
+!ENDIF
+!IFNDEF PGDIR
+!ERROR If USE_GIT is set you must specify PGDIR as the root of a tree to put builds in
+!ENDIF
+!IFNDEF PG_BRANCH
+!ERROR If USE_GIT is set you must specify PG_BRANCH so we know what to check out
+!ENDIF
+!IFNDEF GIT
+!ERROR If USE_GIT is set you must set GIT to the location of the git executable, or "git" if it's on the PATH
 !ENDIF
 
-!IFNDEF PG_BRANCH
-PG_BRANCH=REL9_2_STABLE
 !ENDIF
+
 
 !IFNDEF TOOLPREFIX
 TOOLPREFIX=c:
@@ -47,10 +55,10 @@ PYTHON3_X86=$(TOOLPREFIX)\Python33_x86
 PYTHON3_X64=$(TOOLPREFIX)\Python33_x64
 !ENDIF
 !IFNDEF TCL_X86
-TCL_X86=$(TOOLPREFIX)\Tcl_x86
+TCL_X86=$(TOOLPREFIX)\Tcl_85_x86
 !ENDIF
 !IFNDEF TCL_X64
-TCL_X64=$(TOOLPREFIX)\Tcl_x64
+TCL_X64=$(TOOLPREFIX)\Tcl_85_x64
 !ENDIF
 
 !IFNDEF MINGW
@@ -63,10 +71,6 @@ MSYS=$(MINGW)\msys\1.0\
 
 !IFNDEF 7ZIP
 7ZIP=c:\Program Files\7-Zip\7z.exe
-!ENDIF
-
-!IFNDEF GIT
-GIT=c:\Program Files (x86)\Git\bin\git.exe
 !ENDIF
 
 # Tools the scripts can download and install

@@ -27,7 +27,20 @@
 # You can't set PLATFORMTOOLSET, it's a version param.
 #
 LIBBUILDDIR=$(LIBDIR)\$(PLATFORMTOOLSET)\$(TARGET_CPU)\$(CONFIGURATION)
-PGBUILDDIR=$(PGDIR)\$(PLATFORMTOOLSET)\$(TARGET_CPU)\$(CONFIGURATION)
+
+# By default the tools will build PostgreSQL from git in a tree it creates.
+# If you want to you can instead specify a PGBUILDDIR location, in which case
+# it'll build in that directory instead of checking out from git.
+#
+# 
+
+!IFDEF UES_GIT
+PGBUILDDIR=$(PGDIR)\$(PLATFORMTOOLSET)\$(TARGET_PLATFORM)\$(TARGET_CPU)\$(CONFIGURATION)\$(PG_BRANCH)
+!ELSE
+!IFNDEF PGBUILDDIR
+!ERROR USE_GIT is not set, so you must set PGBUILDDIR to the location of a PostgreSQL source tree
+!ENDIF
+!ENDIF
 
 !IF ( "$(TARGET_CPU)" == "x86" )
 PERLDIR=$(PERL_X86)

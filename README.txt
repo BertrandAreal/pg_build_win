@@ -103,24 +103,91 @@ Configure the build
 Copy settings-template.mak to settings.mak and edit it to reflect your
 environment. You can pass the settings on the command line instead, but
 currently an empty settings.mak is still required. See settings-defaults.mak
-for what you can override. You will want to set at least:
+for what you can override.
+
+There are two build modes offered; you must pick whether you want the build
+scripts to manage the PostgreSQL sources trees for you by checking them out
+from git, or whether you want to manage them yourself. These modes do not
+affect libraries, only management of the PostgreSQL sources.
+
+In either case, you must set LIBDIR to the absolute path you want to put
+the dependencies that the build scripts manage for you, eg:
 
 	LIBDIR=\where\to\put\libraries
-	PGDIR=\where\to\put\pg\working\trees
-	PG_GIT_URL=valid Git url for PostgreSQL
-	PG_BRANCH=which pg branch to build, eg REL9_2_STABLE or master
 
-It's preferable to use absolute paths for LIBDIR and PGDIR.
+Anything inside LIBDIR will be deleted by "nmake reallyclean"
 
-Anything inside LIBDIR and PGDIR will be deleted by "nmake reallyclean".
+Automatic PostgreSQL source trees - USE_GIT
+-------------------------------------------
 
-As cloning Pg from scratch takes time, I recommend cloning a bare copy of the Pg repo *outside* LIBDIR and PGDIR:
+If you set USE_GIT and specify where to put the source trees (PGDIR), where to
+find a PostgreSQL git mirror (PG_GIT_URL), what branch to check out (PG_BRANCH)
+and the location of the git executable (GIT), the build scripts will manage
+your builds for you under PGDIR. Eg:
+
+	USE_GIT=1
+	GIT=c:\Program Files (x86)\Git\bin\git.exe
+	PGDIR=c:\postgresql-build
+	PG_GIT_URL=c:\postgresql-git-bare-mirror
+	PG_BRANCH=master
+
+Anything inside PGDIR will be deleted by "nmake reallyclean". The source tree will be
+reset using "git clean -fdx" when you "nmake clean" or "nmake postgresql-clean", so don't
+do work in the script-managed PostgreSQL trees; either push to a branch and have the tools
+build the branch, or manually manage the source tree (see below).
+
+Builds will go in different locations based on their settings - /x86 vs /x64,
+/release vs /debug, SDK version, target OS, and Pg branch. For example,
+REL9_2_STABLE built for /x86 /release /xp built with Windows SDK 7.1 with PGDIR
+set to c:\postgresql-build will go in:
+
+	D:\postgresql-build\Windows7.1SDK\xp\x86\Release\REL9_2_STABLE
+
+As cloning Pg from scratch takes time, I recommend cloning a bare copy of the Pg repo *outside* LIBDIR and PGDIR, eg:
 
 	git clone --bare --mirror git://git.postgresql.org/git/postgresql.git d:\postgresql-git
 
 and specifying the path to it as PG_GIT_URL:
 
 	PG_GIT_URL=d:\postgresql-git
+
+Manually managed PostgreSQL source trees - set PGBUILDDIR
+---------------------------------------------------------
+
+If you're developing PostgreSQL in an existing working tree or you're using
+these scripts for a buildfarm / continuous integration setup, you or some other
+tools might be managing your git checkouts, or you could even be working from
+source tarballs.  In that case you won't want the build scripts messing around
+with git.
+
+You can still use these scripts to manage your library dependencies and to
+generate buildenv.pl and config.pl for you if you're working in a manually
+managed source tree. Just leave USE_GIT unset, and set PGBUILDDIR to the
+location of your source tree.
+
+For example:
+
+	nmake /f d:\pg_build_win PGBUILDDIR=d:\my-postgresql-dev-tree
+
+The scripts won't use git and you don't need it installed. In this mode, "nmake
+postgresql-clean" and "nmake clean" will use "src\tools\msvc\clean.bat dist" to
+clean the source tree, rather than using git.
+
+You still need a settings.mak, but if you set LIBDIR on the command line too it
+can be an empty file.
+
+(Optional) Download library source archives
+===========================================
+
+The build tools will use wget to download the source archives into LIBDIR\pkg
+for you if it can't find them.
+
+If you like, you can create LIBDIR\pkg and copy the source archives from
+somewhere yourself for offline use. The filenames the build scripts look
+for are specified in settings-default.mak and can be overridden in settings.mak.
+
+Be warned that "nmake reallyclean" will delete LIBDIR and its contents,
+including any source packages you put there.
 	
 SET UP VISUAL STUDIO ENVIRONMENT
 ================================

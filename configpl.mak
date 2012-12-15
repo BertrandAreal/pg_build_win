@@ -2,8 +2,8 @@
 # Create config.pl and buildenv.pl for a PostgreSQL build
 #
 
-CONFIG_PL=$(PGBUILDDIR)\$(PG_BRANCH)\src\tools\msvc\config.pl
-BUILDENV_PL=$(PGBUILDDIR)\$(PG_BRANCH)\src\tools\msvc\buildenv.pl
+CONFIG_PL=$(PGBUILDDIR)\src\tools\msvc\config.pl
+BUILDENV_PL=$(PGBUILDDIR)\src\tools\msvc\buildenv.pl
 
 $(CONFIG_PL):
 	@echo Generated config.pl:
