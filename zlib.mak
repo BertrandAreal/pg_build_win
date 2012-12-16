@@ -24,7 +24,7 @@ $(ZLIB_SRCDIR)\zlib1.dll: $(ZLIB_SRCDIR)\unpack-stamp
 	$(MAKE) /f win32\Makefile.msc clean
 	$(MAKE) /f win32\Makefile.msc
 
-ZLIB_OBJS=$(ZLIB_BINDIR)\include\zlib.h $(ZLIB_BINDIR)\include\zconf.h $(ZLIB_BINDIR)\bin\zlib1.dll $(ZLIB_BINDIR)\bin\zlib1.pdb $(ZLIB_BINDIR)\lib\zdll.exp $(ZLIB_BINDIR)\lib\zdll.lib 
+ZLIB_OBJS=$(ZLIB_BINDIR)\include\zlib.h $(ZLIB_BINDIR)\include\zconf.h $(ZLIB_BINDIR)\bin\zlib1.dll $(ZLIB_BINDIR)\symbols\zlib1.pdb $(ZLIB_BINDIR)\lib\zdll.exp $(ZLIB_BINDIR)\lib\zdll.lib 
 
 $(ZLIB_BINDIR)\include\zlib.h: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\include md $(ZLIB_BINDIR)\include
@@ -40,9 +40,9 @@ $(ZLIB_BINDIR)\bin\zlib1.dll: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\bin md $(ZLIB_BINDIR)\bin
 	copy /Y /B  $(ZLIB_SRCDIR)\zlib1.dll $(ZLIB_BINDIR)\bin\zlib1.dll >NUL
 	
-$(ZLIB_BINDIR)\bin\zlib1.pdb: $(ZLIB_SRCDIR)\zlib1.dll
-	@IF NOT EXIST $(ZLIB_BINDIR)\bin md $(ZLIB_BINDIR)\bin
-	copy /Y /B  $(ZLIB_SRCDIR)\zlib1.pdb $(ZLIB_BINDIR)\bin\zlib1.pdb >NUL
+$(ZLIB_BINDIR)\symbols\zlib1.pdb: $(ZLIB_SRCDIR)\zlib1.dll
+	@IF NOT EXIST $(ZLIB_BINDIR)\symbols md $(ZLIB_BINDIR)\symbols
+	copy /Y /B  $(ZLIB_SRCDIR)\zlib1.pdb $(ZLIB_BINDIR)\symbols\zlib1.pdb >NUL
 	
 $(ZLIB_BINDIR)\lib\zdll.exp: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\lib md $(ZLIB_BINDIR)\lib
@@ -62,3 +62,8 @@ zlib-clean:
 	
 zlib-really-clean: zlib-clean
 	IF EXIST $(ZLIB_ARCHIVE) del $(ZLIB_ARCHIVE)
+
+# The zlib bin tree is structured the same as the PostgreSQL install tree
+# so we can just copy it over.	
+zlib-install: zlib
+	xcopy $(ZLIB_BINDIR) $(PGINSTALLDIR) /E /I /F /Y

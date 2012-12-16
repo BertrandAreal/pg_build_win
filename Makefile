@@ -42,6 +42,10 @@ PGBUILDDIR=$(PGDIR)\$(PLATFORMTOOLSET)\$(TARGET_PLATFORM)\$(TARGET_CPU)\$(CONFIG
 !ENDIF
 !ENDIF
 
+!IFNDEF PGINSTALLDIR
+PGINSTALLDIR=$(PGBUILDDIR)\binaries
+!ENDIF
+
 !IF ( "$(TARGET_CPU)" == "x86" )
 PERLDIR=$(PERL_X86)
 PYTHON2DIR=$(PYTHON2_X86)
@@ -66,6 +70,7 @@ phony:
 !INCLUDE zlib.mak
 !INCLUDE configpl.mak
 !INCLUDE postgresql.mak
+!include install.mak
 
 clean: zlib-clean postgresql-clean
 	IF EXIST $(LIBBUILDDIR) rd /s /q $(LIBBUILDDIR)

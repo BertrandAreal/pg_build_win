@@ -136,20 +136,23 @@ reset using "git clean -fdx" when you "nmake clean" or "nmake postgresql-clean",
 do work in the script-managed PostgreSQL trees; either push to a branch and have the tools
 build the branch, or manually manage the source tree (see below).
 
-Builds will go in different locations based on their settings - /x86 vs /x64,
-/release vs /debug, SDK version, target OS, and Pg branch. For example,
+Builds and installs will go in different locations (PGBUILDDIR) based on their settings
+- /x86 vs /x64, /release vs /debug, SDK version, target OS, and Pg branch. For example,
 REL9_2_STABLE built for /x86 /release /xp built with Windows SDK 7.1 with PGDIR
 set to c:\postgresql-build will go in:
 
 	D:\postgresql-build\Windows7.1SDK\xp\x86\Release\REL9_2_STABLE
 
-As cloning Pg from scratch takes time, I recommend cloning a bare copy of the Pg repo *outside* LIBDIR and PGDIR, eg:
+As cloning Pg from scratch takes time and bandwidth, I recommend cloning a bare copy
+of the Pg repo *outside* LIBDIR and PGDIR, eg:
 
 	git clone --bare --mirror git://git.postgresql.org/git/postgresql.git d:\postgresql-git
 
 and specifying the path to it as PG_GIT_URL:
 
 	PG_GIT_URL=d:\postgresql-git
+	
+To pull new changes into that repository use, "git fetch".
 
 Manually managed PostgreSQL source trees - set PGBUILDDIR
 ---------------------------------------------------------
@@ -169,11 +172,14 @@ For example:
 
 	nmake /f d:\pg_build_win PGBUILDDIR=d:\my-postgresql-dev-tree
 
-The scripts won't use git and you don't need it installed. In this mode, "nmake
-postgresql-clean" and "nmake clean" will use "src\tools\msvc\clean.bat dist" to
-clean the source tree, rather than using git.
+The pseudo-env-var %CD% is useful if you want to build a PostgreSQL source tree
+rooted in the current directory.
 
-You still need a settings.mak, but if you set LIBDIR on the command line too it
+If USE_GIT is not set, the scripts won't use git and you don't need it installed. 
+In this mode, "nmake postgresql-clean" and "nmake clean" will use 
+"src\tools\msvc\clean.bat dist" to clean the source tree, rather than using git.
+
+You still need a settings.mak, but if you set LIBDIR on the command line then it
 can be an empty file.
 
 (Optional) Download library source archives
@@ -232,6 +238,22 @@ has "libname" and "libname-clean" targets, eg:
 
 * zlib
 * zlib-clean
+
+INSTALLATION
+------------
+
+To get a tree of installed PostgreSQL binaries, contrib modules,
+etc including the library dependencies, use the "install" target.
+
+By default, "install" will install the binaries to a directory named "binaries"
+under PGBUILDDIR. Change this if desired by setting PGINSTALLDIR.
+
+If you want just the PostgreSQL install but not the libraries, use
+"postgresql-install".
+
+The interpreters for the PLs are not copied over. Neither is the Visual
+C++ redist for your SDK, which will need to be installed before the compiled
+binaries will run on another machine.
 
 CLEANING:
 ---------
