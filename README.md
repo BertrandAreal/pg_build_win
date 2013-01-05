@@ -1,14 +1,18 @@
 These scripts create a PostgreSQL build environment for Windows, and build
 PostgreSQL.
 
-They're for NMake, the Microsoft version of make that uses cmd.exe. It comes
-with Visual Studio. Yes, that's horrid, but it's better than trying to disentangle
-the environment of mingw from that of Visual Studio.
+The scripts use Perl as a wrapper around Microsoft's nmake, the build tool
+that comes with the Microsoft Windows SDK and with Visual Studio.
 
-You will require installs of ActiveState Perl, ActiveState TCL, Python.org
+You will need installs of ActiveState Perl, ActiveState TCL, Python.org
 Python 2, MinGW, git (from git-scm.org), and the Microsoft SDK 7.1 to use these
-scripts. Instructions on unattended installs for these tools are coming shortly;
-just need to copy them from another machine.
+scripts. If you want to use a different Windows SDK, see "Other SDKs".
+
+I recommend that you avoid running these scripts on a machine you use to
+run a real PostgreSQL instance you care about. These scripts won't break
+anything (that I'm aware of), but on Windows it's generally risky to do dev
+work on a production machine. As always, keep good backups and make a restore
+point before proceeding.
 
 Download Windows SDK 7.1
 ========================
@@ -40,12 +44,17 @@ and scripts are NOT TESTED on 32-bit windows, only on 64-bit Windows 7 and Windo
 
 Download:
   
-* ActiveState TCL x64 and x86 from http://www.activestate.com/activetcl/downloads
 * ActiveState Perl x86 and x64 from http://www.activestate.com/activeperl/downloads
-* Python.org python 2.7 and 3.3, both in x86 and x64 versions from http://python.org
+  (Perl is not an optional dependency, it's required to run these build scripts and
+   the PostgreSQL Windows build infrastructure).
 * mingw-get-inst from http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
 * git from http://git-scm.com/download/win
 * 7-zip from http://www.7-zip.org/download.html
+
+... and optionally:
+
+* ActiveState TCL x64 and x86 from http://www.activestate.com/activetcl/downloads
+* Python.org python 2.7 and 3.3, both in x86 and x64 versions from http://python.org
 
 You need MinGW even for MSVC builds because you need the "flex" executable
 from it to build on x64; the version provided on the PostgreSQL site doesn't
@@ -54,6 +63,7 @@ these tools come with msysgit too, so a future version may support using
 msysgit instead of MinGW.
 
 I also recommend:
+
 * notepad++ from http://http://notepad-plus-plus.org/download/
 
 Install the tools
@@ -77,12 +87,14 @@ version.
 	start /wait Git-1.8.0-preview20121022.exe /silent
 	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x64-296175.msi /qb /passive PERL_PATH=Yes PERL_EXT=Yes
 	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x86-296175.msi /qb /passive PERL_PATH=No PERL_EXT=No
-	start /wait ActiveTcl8.5.12.0.296033-win32-ix86-threaded.exe --directory %SystemDrive%\TCL_85_x86
-	start /wait ActiveTcl8.5.12.0.296033-win32-x86_64-threaded.exe --directory %SystemDrive%\TCL_85_x64
 	start /wait msiexec /i python-2.7.3.amd64.msi /qb /passive TARGETDIR=%SystemDrive%\Python27_x64 ALLUSERS=1
 	start /wait msiexec /i python-2.7.3.msi /qb /passive TARGETDIR=%SystemDrive%\Python27_x86 ALLUSERS=1
 	start /wait msiexec /i python-3.3.0.amd64.msi /qb /passive TARGETDIR=%SystemDrive%\Python33_x64 ALLUSERS=1
 	start /wait msiexec /i python-3.3.0.msi /qb /passive TARGETDIR=%SystemDrive%\Python33_x64 ALLUSERS=1
+	
+Now install TCL if you want it. These installers don't run fully unattended.
+	start /wait ActiveTcl8.5.*-win32-ix86-threaded.exe --directory %SystemDrive%\TCL_85_x86
+	start /wait ActiveTcl8.5.*-win32-x86_64-threaded.exe --directory %SystemDrive%\TCL_85_x64
 	
 If you downloaded the offline install ISO for the Windows SDK, you can install it with:
 
@@ -100,10 +112,20 @@ Optionally also install notepad++:
 Configure the build
 ===================
 
-Copy settings-template.mak to settings.mak and edit it to reflect your
+Copy settings_template.pl to settings.pl and edit it to reflect your
 environment. You can pass the settings on the command line instead, but
-currently an empty settings.mak is still required. See settings-defaults.mak
-for what you can override.
+currently an empty settings.pl is still required.
+
+Settings on the command line are passed as nmake variables, eg:
+
+    SETTING="the value"
+
+and in config.pl as Perl hashmap entries, eg:
+
+    'SETTING' => 'the value',
+
+To see what you can override, see the settings summary printed when you run
+buildcwd.pl / buildgit.pl, or examine PgBuildWin\Config.pm .
 
 There are two build modes offered; you must pick whether you want the build
 scripts to manage the PostgreSQL sources trees for you by checking them out
@@ -115,26 +137,26 @@ the dependencies that the build scripts manage for you, eg:
 
 	LIBDIR=\where\to\put\libraries
 
-Anything inside LIBDIR will be deleted by "nmake really-clean"
+Anything inside LIBDIR will be deleted by "build{git|cwd}.pl really-clean"
 
-Automatic PostgreSQL source trees - USE_GIT
--------------------------------------------
+Automatic PostgreSQL source trees - buildgit.pl
+-----------------------------------------------
 
-If you set USE_GIT and specify where to put the source trees (PGDIR), where to
+If you use buildgit.pl specify where to put the source trees (PGDIR), where to
 find a PostgreSQL git mirror (PG_GIT_URL), what branch to check out (PG_BRANCH)
-and the location of the git executable (GIT), the build scripts will manage
-your builds for you under PGDIR. Eg:
+and optionally the location of the git executable (GIT), the build scripts will
+manage your builds for you under PGDIR. Eg, in settings.pl:
 
-	USE_GIT=1
-	GIT=c:\Program Files (x86)\Git\bin\git.exe
-	PGDIR=c:\postgresql-build
-	PG_GIT_URL=c:\postgresql-git-bare-mirror
-	PG_BRANCH=master
+	'GIT' => 'c:\Program Files (x86)\Git\bin\git.exe',
+	'PGDIR' => 'c:\postgresql-build',
+	'PG_GIT_URL' => 'c:\postgresql-git-bare-mirror',
+	'PG_BRANCH' => 'master'
 
-Anything inside PGDIR will be deleted by "nmake really-clean". The source tree will be
-reset using "git clean -fdx" when you "nmake clean" or "nmake postgresql-clean", so don't
-do work in the script-managed PostgreSQL trees; either push to a branch and have the tools
-build the branch, or manually manage the source tree (see below).
+Anything inside PGDIR will be deleted by "buildgit.pl really-clean". The source
+tree will be reset using "git clean -fdx" when you "buildgit.pl clean" or
+"buildgit.pl postgresql-clean", so don't do work in the script-managed
+PostgreSQL trees; either push to a branch and have the tools build the branch,
+or manually manage the source tree (see below).
 
 Builds and installs will go in different locations (PGBUILDDIR) based on their settings
 - /x86 vs /x64, /release vs /debug, SDK version, target OS, and Pg branch. For example,
@@ -146,11 +168,11 @@ set to c:\postgresql-build will go in:
 As cloning Pg from scratch takes time and bandwidth, I recommend cloning a bare copy
 of the Pg repo *outside* LIBDIR and PGDIR, eg:
 
-	git clone --bare --mirror git://git.postgresql.org/git/postgresql.git d:\postgresql-git
+	git clone --bare --mirror git://git.postgresql.org/git/postgresql.git d:/postgresql-git
 
 and specifying the path to it as PG_GIT_URL:
 
-	PG_GIT_URL=d:\postgresql-git
+	'PG_GIT_URL' => 'd:\postgresql-git'
 	
 To pull new changes into that repository use, "git fetch".
 
@@ -163,36 +185,34 @@ tools might be managing your git checkouts, or you could even be working from
 source tarballs.  In that case you won't want the build scripts messing around
 with git.
 
-You can still use these scripts to manage your library dependencies and to
-generate buildenv.pl and config.pl for you if you're working in a manually
-managed source tree. Just leave USE_GIT unset, and set PGBUILDDIR to the
-location of your source tree.
+buildcwd.pl will look for settings.pl in the current directory, then in the
+scripts directory. This means that it'll execute any "settings.pl" in the
+directory you invoke it in, so keep that in mind when running builds on
+untrusted branches.
+
+Just cd to the source tree and invoke buildcwd.pl from there:
 
 For example:
 
-	nmake /f d:\pg_build_win PGBUILDDIR=d:\my-postgresql-dev-tree
+        cd \path\to\pg_source_tree
+	\path\to\pg_build_win\buildcwd.pl
 
-The pseudo-env-var %CD% is useful if you want to build a PostgreSQL source tree
-rooted in the current directory.
-
-If USE_GIT is not set, the scripts won't use git and you don't need it installed. 
-In this mode, "nmake postgresql-clean" and "nmake clean" will use 
-"src\tools\msvc\clean.bat dist" to clean the source tree, rather than using git.
-
-You still need a settings.mak, but if you set LIBDIR on the command line then it
-can be an empty file.
+If using buildcwd.pl, the scripts won't use git and you don't need it
+installed.  In this mode, "buildcwd.pl postgresql-clean" and "buildcwd.pl
+clean" will use "src\tools\msvc\clean.bat dist" to clean the source tree,
+rather than using git.
 
 (Optional) Download library source archives
 ===========================================
 
-The build tools will use wget to download the source archives into LIBDIR\pkg
-for you if it can't find them.
+The build tools will download the source archives into LIBDIR\pkg for you if it
+can't find them.
 
 If you like, you can create LIBDIR\pkg and copy the source archives from
 somewhere yourself for offline use. The filenames the build scripts look
 for are specified in settings-default.mak and can be overridden in settings.mak.
 
-Be warned that "nmake really-clean" will delete LIBDIR and its contents,
+Be warned that "build{cwd|git}.pl really-clean" will delete LIBDIR and its contents,
 including any source packages you put there.
 	
 SET UP VISUAL STUDIO ENVIRONMENT
@@ -218,9 +238,14 @@ BUILD
 =====
 
 In a command prompt that's had its environment set up as per "SET UP
-VISUAL STUDIO ENVIRONMENT", do a full build with:
+VISUAL STUDIO ENVIRONMENT", do a full build using:
 
-    nmake /f pg_build_win\Makefile postgresql
+    cd \some\postgresql\sources\
+    \path\to\pg_build_win\buildcwd.pl postgresql
+
+or to use automatically managed git trees:
+
+    buildgit.pl  postgresql 
 
 Supported targets are:
 
@@ -260,6 +285,108 @@ CLEANING:
 
 * clean - remove built libraries and clean PostgreSQL working tree
 * really-clean: Remove built libraries and downloaded files, delete PostgreSQL checkout and working tree
+
+TROUBLESHOOTING
+===============
+
+SDK 7.1 / Visual Studio 2010 conflict with Visual Studio 2012
+-------------------------------------------------------------
+ 
+If you have Visual Studio 2012 installed on your computer, Windows SDK
+7.1 may fail to compile programs with errors like:
+
+LINK : fatal error LNK1123: failure during conversion to COFF: file invalid or corrupt
+
+This is a known issue with Visual Studio 2010 that also appears to affect SDK 7.1, since
+the SDK uses the same compiler suite. The problem was fixed in Visual Studio 2010 SP1, but
+not in SDK 7.1. To work around the problem you must install Visual C++ Express Edition 2010
+and then the Visual Studio 2010 Service Pack 1 update.
+
+Permission denied errors when cleaning
+--------------------------------------
+
+Unlike POSIX systems, on Windows a file or folder that is open by a program cannot
+be deleted or renamed.
+
+If you've run regression tests and they've crashed out without properly terminating
+the server they've started, you will find that you can't clean your working directory
+and you'll get "permission denied" errors for files/folders you obviously do have full
+ownership and control of.
+
+Open up Process Explorer (preferered) or Task Manager. Now find and terminate the problem
+processes - look for psql.exe, pg_regress.exe and postgres.exe . If you have a real PostgreSQL
+instance you use for real work on this machine, be careful not to terminate it.
+
+
+Other SDKs
+==========
+
+Test reports for SDKs and Visual Studio versions listed as "untested"
+below would be greatly appreciated, particularly if they come with
+patches fixing any issues encountered. Add a GitHub issue with the results,
+or better, send a pull request with a docs patch.
+
+Visual Studio 6 is not and will never be supported.
+
+Visual Studio 8 (2005)
+------------------
+Untested.
+
+Visual Studio 9 (2008)
+------------------
+Untested.
+
+Environment setup with vcvarsall.bat:
+
+    "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" /?
+
+Visual Studio 10 (2010)
+------------------
+Visual Studio 2010 and its express edition should work fine with no changes. Environment setup with vcvarsall.bat.
+
+    "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" /?
+	
+vcvarsall.bat does not set TARGET_CPU, CONFIGURATION or PLATFORMTOOLSET so you must set these environment variables yourself.
+
+Visual Studio 11 (2012)
+------------------
+Installing Visual Studio 2012 breaks Visual Studio 2010 (pre-SP1) and Windows SDK 7.1 . See TROUBLESHOOTING.
+
+Environment setup with vcvarsall.bat or VsDevCmd.bat:
+
+    "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\vcvarsall.bat" /?
+	"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\VsDevCmd.bat"
+
+Untested.
+
+Microsoft Platform SDK for Windows XP SP2 
+-----------------------------------------
+Untested
+
+Microsoft Windows SDK for Windows 7 and .NET Framework 4 (7.1)
+--------------------------------------------------------------
+Known working, recommended. Environment setup with setenv.cmd.
+
+    "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /?
+
+Microsoft Windows SDK for Windows 8 and .NET Framework 4.5 (v8.0a)
+------------------------------------------------------------------
+Untested.
+
+Obsolete versions
+-----------------
+
+The following obsolete SDK and Visual Studio releases are not supported and will never be supported by pg_build_win. Patches adding support will be rejected.
+
+* Visual Studio 97
+* Visual Studio 6
+* Visual Studio 7 (.NET 2002, 2003)
+* All Microsoft Platform SDK releases prior to Microsoft Platform SDK for Windows XP SP2
+
+Unlisted SDKs
+-------------
+
+If you have test results for an SDK not listed above, please add a GitHub issue with the results.
 
 RELEVANT DOCUMENTATION
 ======================

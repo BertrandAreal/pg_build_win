@@ -5,28 +5,26 @@
 #  http://msdn.microsoft.com/en-us/library/y5d8s7f6(v=vs.80).aspx
 #  http://msdn.microsoft.com/en-us/library/7y32zxwh(v=vs.80).aspx
 
-!INCLUDE settings.mak
-!INCLUDE settings-defaults.mak
-
 !IFNDEF TARGET_CPU
-!ERROR "TARGET_CPU is not set. Did you run vcvars or setenv?"
+!ERROR "TARGET_CPU is not set. See the README."
 !ENDIF
 
 !IFNDEF CONFIGURATION
-!ERROR "CONFIGURATION is not set. Did you run vcvars or setenv?"
+!ERROR "CONFIGURATION is not set. See the README."
 !ENDIF
 
-!IFNDEF PLATFORMTOOLSET
-!ERROR "PLATFORMTOOLSET is not set. Did you run vcvars or setenv?"
+!IFNDEF SDKVERSION
+!ERROR "SDKVERSION is unset. You need to invoke this makefile via buildall.pl, not directly."
 !ENDIF
 
-# PLATFORMTOOLSET, TARGET_CPU and CONFIGURATION are set by vcvars from visual studio
-# or setenv from the winsdk for WinSDK pass /x86 or /x64 to set TARGET_CPU 
-# and /Release or /Debug to set CONFIGURATION
+# TARGET_CPU and CONFIGURATION are set by setenv from the winsdk. 
+# Pass /x86 or /x64 to set TARGET_CPU and /Release or /Debug to set CONFIGURATION .
 #
-# You can't set PLATFORMTOOLSET, it's a version param.
+# These vars are not set by vcvarsall.bat. You must set CONFIGURATION, TARGET_CPU and 
+# PLATFORMTOOLSET on the nmake command line or in the environment. PLATFORMTOOLSET
+# is rather under-documented; 
 #
-LIBBUILDDIR=$(LIBDIR)\$(PLATFORMTOOLSET)\$(TARGET_CPU)\$(CONFIGURATION)
+LIBBUILDDIR=$(LIBDIR)\$(SDKVERSION)\$(TARGET_CPU)\$(CONFIGURATION)
 
 # By default the tools will build PostgreSQL from git in a tree it creates.
 # If you want to you can instead specify a PGBUILDDIR location, in which case
@@ -35,7 +33,7 @@ LIBBUILDDIR=$(LIBDIR)\$(PLATFORMTOOLSET)\$(TARGET_CPU)\$(CONFIGURATION)
 # 
 
 !IFDEF USE_GIT
-PGBUILDDIR=$(PGDIR)\$(PLATFORMTOOLSET)\$(TARGET_PLATFORM)\$(TARGET_CPU)\$(CONFIGURATION)\$(PG_BRANCH)
+PGBUILDDIR=$(PGDIR)\$(SDKVERSION)\$(TARGET_PLATFORM)\$(TARGET_CPU)\$(CONFIGURATION)\$(PG_BRANCH)
 !ELSE
 !IFNDEF PGBUILDDIR
 !ERROR USE_GIT is not set, so you must set PGBUILDDIR to the location of a PostgreSQL source tree
