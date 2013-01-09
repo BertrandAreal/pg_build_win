@@ -22,7 +22,9 @@ sub get_vc_info() {
 	# Try to determine the cl.exe version
 	open(CLOUTPUT, "cl 2>&1 |") or die ("Failed to exec cl.exe: $!");
 	my $clvers;
+	my @cloutput = ();
 	while (<CLOUTPUT>) {;
+		push(@cloutput, $_);
 		if (/.*Version\s(\d{1,3})/) {
 			$clvers = $1;
 			last;
@@ -30,7 +32,7 @@ sub get_vc_info() {
 	}
 	close(CLOUTPUT);
 	if (!defined($clvers)) {
-		die("cl.exe executed, but unable to determine cl.exe version from output");
+		die("cl.exe executed, but unable to determine cl.exe version from output. Output was: \n" . join("\n",@cloutput));
 	}
 
 	# If we're running under a Visual Studio SDK set up with vcvarsall.bat,

@@ -13,4 +13,4 @@ foreach $val (@ARGV) {
 if (! -e 'src\tools\msvc\build.pl') {
 	die('src\tools\msvc\build.pl not found - did you run buildcwd.pl from a PostgreSQL source tree? See the README.');
 }
-build(0);
+build(0) or die("Build failed.");

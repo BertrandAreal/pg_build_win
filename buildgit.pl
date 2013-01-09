@@ -10,4 +10,4 @@ foreach $val (@ARGV) {
 		die("Don't pass USE_GIT on the command line. Use buildgit.pl instead.");
 	}
 }
-build(1);
+build(1) or die("Build failed.");

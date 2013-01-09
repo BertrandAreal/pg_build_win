@@ -58,9 +58,10 @@ sub build($) {
 	print $cmd . "\n";
 	my $ret = system($cmd);
 	if ($ret != 0) {
-		print("Build failed, return code from nmake was $ret\n");
+		my $shellret = $ret >> 8;
+		print("Build failed, return code from nmake was $shellret (system() returned $ret)\n");
 	} else {
 		print("Build successful");
 	}
-	return $ret == 0;
+	return ($ret == 0);
 }
