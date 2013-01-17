@@ -32,6 +32,10 @@ Win2k8 R2 but must be installed manually for older platforms. Get it here:
 
  http://www.microsoft.com/en-us/download/details.aspx?id=24872
 
+If you have Visual Studio 2010 redistributible packages installed or have
+version 2010 or 2012 of Visual Studio installed, additional steps are required
+to install the Windows SDK 7.1 correctly. See TROUBLESHOOTING.
+
 Download required tools
 =======================
 
@@ -302,6 +306,26 @@ the SDK uses the same compiler suite. The problem was fixed in Visual Studio 201
 not in SDK 7.1. To work around the problem you must install Visual C++ Express Edition 2010
 and then the Visual Studio 2010 Service Pack 1 update.
 
+SDK 7.1 install fails
+---------------------
+
+One possible cause of a Microsoft Windows SDK 7.1 install failure is if
+newer versions of the Visual C++ 2010 redistributable runtime are installed.
+Many program installers will add these for you.
+
+The only workaround I'm aware of is to uninstall any VC++ 2010
+redistributibles, install the SDK, then reinstall the redistributibles. Note
+that uninstalling the redistributibles will cause some programs on your
+computer to fail to run until they're reinstalled.
+
+You can get the redists from:
+
+ 
+* 2010 x86 SP1: http://www.microsoft.com/en-au/download/details.aspx?id=8328
+* 2010 x64 SP1: http://www.microsoft.com/en-au/download/details.aspx?id=13523
+* 2010 x86: http://www.microsoft.com/en-us/download/details.aspx?id=5555
+* 2010 x64: http://www.microsoft.com/en-us/download/details.aspx?id=26999
+
 Permission denied errors when cleaning
 --------------------------------------
 
@@ -316,6 +340,15 @@ ownership and control of.
 Open up Process Explorer (preferered) or Task Manager. Now find and terminate the problem
 processes - look for psql.exe, pg_regress.exe and postgres.exe . If you have a real PostgreSQL
 instance you use for real work on this machine, be careful not to terminate it.
+
+postgres.exe or git.exe hung at max cpu forever, won't End Task
+---------------------------------------------------------------
+
+There appears to be a problem with building and testing PostgreSQL inside
+deep directory trees (130+ characters, roundabout). See:
+
+http://blog.2ndquadrant.com/postgresql-regression-tests-hanging-on-windows-check-path-depth/
+
 
 
 Other SDKs
