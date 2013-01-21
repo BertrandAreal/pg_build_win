@@ -36,6 +36,8 @@ If you have Visual Studio 2010 redistributible packages installed or have
 version 2010 or 2012 of Visual Studio installed, additional steps are required
 to install the Windows SDK 7.1 correctly. See TROUBLESHOOTING.
 
+If installation fails, you might have a newer version of the Visual c++ 2010 runtime installed. See TROUBLESHOOTING.
+
 Download required tools
 =======================
 
@@ -301,10 +303,18 @@ If you have Visual Studio 2012 installed on your computer, Windows SDK
 
 LINK : fatal error LNK1123: failure during conversion to COFF: file invalid or corrupt
 
-This is a known issue with Visual Studio 2010 that also appears to affect SDK 7.1, since
-the SDK uses the same compiler suite. The problem was fixed in Visual Studio 2010 SP1, but
-not in SDK 7.1. To work around the problem you must install Visual C++ Express Edition 2010
-and then the Visual Studio 2010 Service Pack 1 update.
+This is a known issue with Visual Studio 2010 that also appears to affect SDK
+7.1, since the SDK uses the same compiler suite. The problem was fixed in
+Visual Studio 2010 SP1, but not in SDK 7.1. To work around the problem you must
+install Visual C++ Express Edition 2010 and then the Visual Studio 2010 Service
+Pack 1 update. For details, see the readme.htm file in the VS 2010 SP1 compiler update.
+
+Install the tools in the following order:
+
+* VS Express 2010: http://www.microsoft.com/visualstudio/eng/products/visual-studio-2010-express
+* Windows SDK 7.1
+* VS 2010 SP1: http://www.microsoft.com/en-au/download/details.aspx?id=23691
+* VS 2010 SP1 Compiler Update: http://www.microsoft.com/en-au/download/details.aspx?id=4422
 
 SDK 7.1 install fails
 ---------------------
