@@ -401,10 +401,14 @@ Microsoft Windows SDK for Windows 7 and .NET Framework 4 (7.1)
 Known working, recommended. Environment setup with setenv.cmd.
 
     "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /?
+	
+Known compatibility issues with Visual Studio 2010, .NET 4.5, and Visual Studio 2012. See TROUBLESHOOTING.
 
 Microsoft Windows SDK for Windows 8 and .NET Framework 4.5 (v8.0a)
 ------------------------------------------------------------------
-Untested.
+You cannot compile PostgreSQL with this SDK because this version of the SDK does not include standalone compilers and build tools.
+
+You must use Visual Studio 2012 or the express edition instead.
 
 Obsolete versions
 -----------------
