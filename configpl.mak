@@ -19,9 +19,9 @@ our $$config = {
 	  # wal_segsize => 16,      # --with-wal-segsize, 16MB by default
 	ldap    => 1,        # --with-ldap
 	nls     => undef,    # --enable-nls=<path>
-	tcl     => '$(TCLDIR)',    # --with-tls=<path>
-	perl    => '$(PERLDIR)',    # --with-perl
-	python  => '$(PYTHON2DIR)',    # --with-python=<path>
+	tcl     => '$(TCLDIR)' || undef,    # --with-tls=<path>
+	perl    => '$(PERLDIR)' || undef,    # --with-perl
+	python  => '$(PYTHON2DIR)' || undef,    # --with-python=<path>
 	krb5    => undef,    # --with-krb5=<path>
 	openssl => undef,    # --with-ssl=<path>
 	uuid    => undef,    # --with-ossp-uuid
@@ -38,7 +38,8 @@ $(BUILDENV_PL):
 	@echo Generated buildenv.pl
 	@echo ---------------------
 	@type <<$@
-$$ENV{PATH}=$$ENV{PATH} . ';$(MSYS)\bin';
+# The PATH is now set via the wrapper script
+#$$ENV{PATH}=$$ENV{PATH} . ';$(MSYS)\bin';
 1;
 << KEEP
 	@echo ---------------------

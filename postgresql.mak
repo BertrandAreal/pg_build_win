@@ -25,10 +25,18 @@ $(PGBUILDDIR): phony
 # us to find out if the tree is dirty, so we have to re-run the build and let it decide
 # anyway.
 #
-postgresql: $(FLEX) $(BISON) zlib $(PGBUILDDIR) $(CONFIG_PL) $(BUILDENV_PL)
+# The weird hack with tee works around an odd stdio issue that seems to occur
+# on some machines with some consoles and some SDK versions with some Perl versions.
+# Which ones? Never did work it out.
+#
+postgresql: zlib $(PGBUILDDIR) $(CONFIG_PL) $(BUILDENV_PL)
 	cd $(PGBUILDDIR)\src\tools\msvc
+!IFDEF TEE
+	"$(PERL_CMD)" build.pl 2>&1 | tee build-log.log
+!ELSE
 	"$(PERL_CMD)" build.pl
-
+!ENDIF
+	
 !IFDEF USE_GIT	
 postgresql-clean: phony
 	IF EXIST $(PGBUILDDIR)\.git\HEAD ( cd $(PGBUILDDIR) &&  "$(GIT)" clean -fdx )

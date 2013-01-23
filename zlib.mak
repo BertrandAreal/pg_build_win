@@ -6,18 +6,18 @@ ZLIB_ARCHIVE=$(PKGDIR)\zlib-$(ZLIB_VERSION).zip
 ZLIB_SRCDIR=$(LIBBUILDDIR)\zlib-$(ZLIB_VERSION)
 ZLIB_BINDIR=$(LIBBUILDDIR)\zlib-$(ZLIB_VERSION)-bin
 
-$(ZLIB_ARCHIVE): $(WGET)
+$(ZLIB_ARCHIVE):
 	@IF NOT EXIST $(PKGDIR) md $(PKGDIR)
-	$(WGET) -q -O $(ZLIB_ARCHIVE) $(ZLIB_URL)
+	"$(CURL)" -s -o $(ZLIB_ARCHIVE) $(ZLIB_URL)
 	
 $(LIBBUILDDIR):
 	IF NOT EXIST $(LIBBUILDDIR) md $(LIBBUILDDIR)
 	
 # Because timestamps will be preserved from the archive, use a 
 # marker file to track it.
-$(ZLIB_SRCDIR)\unpack-stamp: $(ZLIB_ARCHIVE) $(TOUCH) $(LIBBUILDDIR)
+$(ZLIB_SRCDIR)\unpack-stamp: $(ZLIB_ARCHIVE) $(LIBBUILDDIR)
 	"$(7ZIP)" x -o$(LIBBUILDDIR) -bd -y $(ZLIB_ARCHIVE)
-	@$(TOUCH) $(ZLIB_SRCDIR)\unpack-stamp
+	@"$(TOUCH)" $(ZLIB_SRCDIR)\unpack-stamp
 
 $(ZLIB_SRCDIR)\zlib1.dll: $(ZLIB_SRCDIR)\unpack-stamp
 	cd $(ZLIB_SRCDIR)
@@ -29,12 +29,12 @@ ZLIB_OBJS=$(ZLIB_BINDIR)\include\zlib.h $(ZLIB_BINDIR)\include\zconf.h $(ZLIB_BI
 $(ZLIB_BINDIR)\include\zlib.h: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\include md $(ZLIB_BINDIR)\include
 	copy /Y /B $(ZLIB_SRCDIR)\zlib.h $(ZLIB_BINDIR)\include\zlib.h >NUL
-	@$(TOUCH) $(ZLIB_BINDIR)\include\zlib.h
+	@"$(TOUCH)" $(ZLIB_BINDIR)\include\zlib.h
 	
 $(ZLIB_BINDIR)\include\zconf.h: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\include md $(ZLIB_BINDIR)\include
 	copy /Y /B  $(ZLIB_SRCDIR)\zconf.h   $(ZLIB_BINDIR)\include\zconf.h >NUL
-	@$(TOUCH) $(ZLIB_BINDIR)\include\zconf.h
+	@"$(TOUCH)" $(ZLIB_BINDIR)\include\zconf.h
 	
 $(ZLIB_BINDIR)\bin\zlib1.dll: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\bin md $(ZLIB_BINDIR)\bin
@@ -47,12 +47,12 @@ $(ZLIB_BINDIR)\symbols\zlib1.pdb: $(ZLIB_SRCDIR)\zlib1.dll
 $(ZLIB_BINDIR)\lib\zdll.exp: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\lib md $(ZLIB_BINDIR)\lib
 	copy /Y /B  $(ZLIB_SRCDIR)\zdll.exp  $(ZLIB_BINDIR)\lib\zdll.exp >NUL
-	@$(TOUCH) $(ZLIB_BINDIR)\lib\zdll.exp
+	@"$(TOUCH)" $(ZLIB_BINDIR)\lib\zdll.exp
 	
 $(ZLIB_BINDIR)\lib\zdll.lib: $(ZLIB_SRCDIR)\zlib1.dll
 	@IF NOT EXIST $(ZLIB_BINDIR)\lib md $(ZLIB_BINDIR)\lib
 	copy /Y /B  $(ZLIB_SRCDIR)\zdll.lib  $(ZLIB_BINDIR)\lib\zdll.lib >NUL
-	@$(TOUCH) $(ZLIB_BINDIR)\lib\zdll.lib
+	@"$(TOUCH)" $(ZLIB_BINDIR)\lib\zdll.lib
 
 zlib: $(ZLIB_OBJS)
 

@@ -17,6 +17,10 @@ sub get_vc_info() {
 	my $sdkvers;
 	if ($ENV{'WindowsSDKDir'} =~ /Microsoft SDKs\\Windows\\([^\\]+)/) {
 		$sdkvers = $1;
+	} elsif ($ENV{'WindowsSDKDir'} =~ /Windows Kits\\([^\\]+)/) { 
+		$sdkvers = $1;
+	} else {
+		die("Env var %WindowsSDKDir% doesn't match a known SDK: $ENV{'WindowsSDKDir'}\n");
 	}
 
 	# Try to determine the cl.exe version
@@ -46,7 +50,11 @@ sub get_vc_info() {
 
 sub detect_sdk() {
 	our ($sdkvers, $clvers, $vsvers) = get_vc_info();
-	our $verstring = "sdk${sdkvers}_cl${clvers}" . (defined($vsvers)?"_vs${vsvers}":"");
+	if (defined($sdkvers)) {
+		our $verstring = "sdk${sdkvers}_cl${clvers}" . (defined($vsvers)?"_vs${vsvers}":"");
+	} else {
+		die("Unable to detect Windows SDK version\n");
+	}
 };
 
 sub ver_string() {

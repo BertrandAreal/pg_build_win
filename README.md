@@ -83,16 +83,22 @@ them and wait, but it won't work with all installers.
 
 You will need to adjust the file names to reflect the exact files you downloaded.
 
-If you're on a 32-bit platform, omit the lines for 64-bit programs and for Perl, use 
-PERL_PATH=Yes PERL_EXT=Yes for the 32-bit version since you aren't installing the 64-bit
-version.
+On 64-bit platforms:
+
+	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x64-296175.msi /qb /passive PERL_PATH=Yes PERL_EXT=Yes
+	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x86-296175.msi /qb /passive PERL_PATH=No PERL_EXT=No
+
+On 32-bit platforms:
+
+	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x86-296175.msi /qb /passive PERL_PATH=Yes PERL_EXT=Yes
+
+Then for x64 install all the below, and for x68 install only the non-64-bit versions:
+
 
 	start /wait mingw-get-inst-20120426.exe /silent
 	c:\MinGW\bin\mingw-get.exe install msys-flex msys-bison g++ gdb mingw32-make msys-base
 	start /wait msiexec /i 7z920-x64.msi /qb /passive /norestart
 	start /wait Git-1.8.0-preview20121022.exe /silent
-	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x64-296175.msi /qb /passive PERL_PATH=Yes PERL_EXT=Yes
-	start /wait msiexec /i ActivePerl-5.16.1.1601-MSWin32-x86-296175.msi /qb /passive PERL_PATH=No PERL_EXT=No
 	start /wait msiexec /i python-2.7.3.amd64.msi /qb /passive TARGETDIR=%SystemDrive%\Python27_x64 ALLUSERS=1
 	start /wait msiexec /i python-2.7.3.msi /qb /passive TARGETDIR=%SystemDrive%\Python27_x86 ALLUSERS=1
 	start /wait msiexec /i python-3.3.0.amd64.msi /qb /passive TARGETDIR=%SystemDrive%\Python33_x64 ALLUSERS=1
@@ -224,10 +230,10 @@ including any source packages you put there.
 SET UP VISUAL STUDIO ENVIRONMENT
 ================================
 	
-Set up your Visual Studio or Windows SDK environment for the build target you want.
-Either use the Start menu option to launch a suitable prompt if you want the default
-settings, or preferably open a new ordinary Command Prompt and use SetEnv.cmd
-(SDK) or vcvars.bat (Studio) to set the environment up.
+Set up your Visual Studio or Windows SDK environment for the build target you
+want.  Either use the Start menu option to launch a suitable prompt if you want
+the default settings, or preferably open a new ordinary Command Prompt and use
+SetEnv.cmd (SDK) or vcvars.bat (Studio) to set the environment up.
 
 For windows SDK 7.1 32-bit release builds you'd use:
 
@@ -239,6 +245,12 @@ For options:
 
 The main options are "/x86" vs "/x64" and "/Debug" vs "/Release".
 You probably want to pass "/xp" for 32-bit builds and "/2008" for 64-bit builds.
+
+vcvarsall.bat for Visual Studio builds works a bit differently to the Windows
+SDK 7.1 SetEnv.cmd script. They do not offer any control of the debug/release
+state ("Configuration") or the target platform; the only argument they accept
+is an arcitecture. You must set the environment variables for TARGET and
+Configuration yourself.
 
 BUILD
 =====
@@ -398,9 +410,9 @@ Installing Visual Studio 2012 breaks Visual Studio 2010 (pre-SP1) and Windows SD
 Environment setup with vcvarsall.bat or VsDevCmd.bat:
 
     "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\vcvarsall.bat" /?
-	"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\VsDevCmd.bat"
 
-Untested.
+Build not supported for PostgreSQL 9.2 and older; 9.3 or newer is required
+for Visual Studio 2012 build support.
 
 Microsoft Platform SDK for Windows XP SP2 
 -----------------------------------------

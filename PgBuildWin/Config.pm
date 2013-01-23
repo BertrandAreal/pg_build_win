@@ -6,6 +6,7 @@ use Exporter;
 use File::Spec::Functions qw/catfile catdir devnull/;
 use IPC::Open3 qw( open3 );
 use FindBin qw($Bin);
+use File::Basename qw/dirname/;
 
 our $VERSION = 1.00;
 our @ISA = qw(Exporter);
@@ -23,6 +24,14 @@ sub set_ind($$$) {
 		$h->{$k} = $v;
 	}
 };
+
+sub set_ind_path($$$) {
+	# Same as set_ind, but only sets default if the path actually exists
+	my ($h, $k, $v) = @_;
+	if (-e $k) {
+		set_ind($h,$k,$v);
+	}
+}
 
 sub test_cmd($) {
 	my $cmd = $_[0];
@@ -78,7 +87,32 @@ sub find_git() {
 	) {
 		return $git if test_cmd('"' . $git . '" --version');
 	}
-	return;
+	return undef;
+}
+
+sub find_7zip($) {
+	my $ma = $_[0];
+	my $sevenz;
+	foreach $sevenz (
+		'7z',
+		'7za',
+		catfile($ENV{'ProgramFiles'}, '7-Zip','7z.exe'),
+		catfile($ENV{'ProgramFiles(x86)'}, '7-Zip','7z.exe')
+	) {
+		if (test_cmd('"' . $sevenz . '"')) {
+			$ma->{'7ZIP'} = $sevenz;
+			return 1;
+		}
+	}
+}
+
+sub add_util_to_path($) {
+	my $cmd = $_[0];
+	my $cmddir = dirname($cmd);
+	if ( ($cmddir ne '.') && (index($ENV{'PATH'}, $cmddir) == -1) ) {
+		$ENV{PATH} .= ';' . $cmddir;
+		print("Added " . $cmddir . " to PATH\n");
+	}
 }
 
 # Pass a reference to the config hash to merge_defaults
@@ -90,15 +124,18 @@ sub merge_defaults($$) {
 		unless defined($cfg->{'makeargs'});
 	my $ma = $cfg->{'makeargs'};
 	
-	set_ind($ma, 'TARGET_CPU', $ENV{'TARGET_CPU'});
+	set_ind($ma, 'TARGET_CPU', defined($ENV{'TARGET_CPU'}) ? $ENV{'TARGET_CPU'} : '');
 	my $cpu = lc($ma->{'TARGET_CPU'});
-	if (!defined($cpu)) {
-		die("TARGET_CPU isn't defined in settings.pl or the environment. Did you run vcvars or setenv.cmd?");
+	if (!defined($cpu) || $cpu eq '') {
+		die("TARGET_CPU isn't defined in settings.pl or the environment. See README.");
+	}
+
+	set_ind($ma, 'CONFIGURATION', defined($ENV{'CONFIGURATION'}) ? $ENV{'CONFIGURATION'} : '');
+	if ($ma->{'CONFIGURATION'} eq '') {
+		die("CONFIGURATION isn't defined in settings.pl or the environment. See README.");
 	}
 	
 	die("Don't set USE_GIT in settings.pl; use buildgit.pl instead.") if exists($ma->{'USE_GIT'});
-
-	set_ind($ma, 'CONFIGURATION', $ENV{'CONFIGURATION'});
 	
 	set_ind($ma, 'LIBDIR', '\pg\libs');
 	set_ind($ma, 'PKGDIR', catdir($ma->{'LIBDIR'}, 'pkgs'));
@@ -114,7 +151,7 @@ sub merge_defaults($$) {
 		}
 	} else {
 		# Unset git-related params if USE_GIT is not set
-		delete $ma->{'GIT'};
+		# but keep the GIT path; we'll use it later
 		delete $ma->{'GIT_PULL'};
 		delete $ma->{'PG_GIT_URL'};
 		delete $ma->{'PGDIR'};
@@ -138,11 +175,6 @@ sub merge_defaults($$) {
 	} else {
 		die("Unknown TARGET_CPU $cpu");
 	}
-
-	set_ind($ma, 'MINGW', catdir($ma->{'TOOLPREFIX'}, 'MinGW'));
-	set_ind($ma, 'MSYS', catdir($ma->{'MINGW'}, 'msys', '1.0'));
-	# you can also use 7za, the standalone 7zip, here.
-	set_ind($ma, '7ZIP', catfile($ENV{'ProgramFiles'}, '7-Zip','7z.exe'));
 	
 	# Tools the scripts can download and install
 	# for you.
@@ -152,15 +184,75 @@ sub merge_defaults($$) {
 	# Override this to specify a particular perl executable
 	set_ind($ma, 'PERL_CMD', 'perl');
 
-	# Where to find wget for downloading sources
-	# TODO: Do downloads with Perl instead
-	set_ind($ma, 'WGET', catfile($ma->{'MSYS'}, 'bin', 'wget.exe'));
-
-	# FIXME: currently we don't respect $(FLEX) and $(BISON)
-	# We assume they're in the msys directory.
-	set_ind($ma, 'FLEX', catfile($ma->{'MSYS'}, 'bin', 'flex.exe'));
-	set_ind($ma, 'BISON', catfile($ma->{'MSYS'}, 'bin', 'bison.exe'));
-	set_ind($ma, 'TOUCH', catfile($ma->{'MSYS'}, 'bin', 'touch.exe'));
+	set_ind_path($ma, 'MINGW', catdir($ma->{'TOOLPREFIX'}, 'MinGW'));
+	set_ind_path($ma, 'MSYS', catdir($ma->{'MINGW'}, 'msys', '1.0'));
+	
+	# Look for flex, curl, bison and touch in msysgit, then if not found in
+	# mingw.
+	my $cmd;
+	foreach $cmd ('flex', 'bison', 'touch','curl', 'tee') {
+		if (!defined($ma->{uc($cmd)})) {
+			if (test_cmd("\"$cmd\" --version")) {
+				print("Detected $cmd on PATH\n");
+				$ma->{uc($cmd)} = $cmd;
+				next;
+			}
+			if (defined($ma->{'GIT'})) {
+				# Why shortpaths? Bison may misbehave if the path has spaces in it.
+				my $cmdpath = Win32::GetShortPathName(catfile(dirname($ma->{'GIT'}),$cmd . '.exe'));
+				if (test_cmd("\"$cmdpath\" --version")) {
+					print("Detected $cmd at $cmdpath\n");
+					$ma->{uc($cmd)} = $cmdpath;
+					next;
+				}
+			}
+			if (defined($ma->{'MINGW'})) {
+				my $cmdpath = Win32::GetShortPathName(catfile($ma->{'MINGW'}, $cmd . '.exe'));
+				if (test_cmd("\"$cmdpath\" --version")) {
+					print("Detected $cmd at $cmdpath\n");
+					$ma->{uc($cmd)} = $cmdpath;
+					next;
+				}
+			}
+		}
+	}
+	
+	foreach $cmd ('flex', 'bison', 'touch','curl') {
+		if (!defined($ma->{uc($cmd)})) {
+			die('Could not find usable ' . uc($cmd) . '. Looked in MAKEARGS, git install, mingw. See README.');
+		}
+		if (!test_cmd("\"$ma->{uc($cmd)}\" --version")) {
+			die("Expected usable $cmd at $ma->{uc($cmd)}, cannot proceed with build. See README.\n");
+		}
+	}
+	
+	if ($ma->{'BISON'} =~ / /) {
+		my $shortbison = Win32::GetShortPathName($ma->{'BISON'});
+		if ($shortbison =~ / /) {			
+			print("---------------------------------------------\n");
+			print("WARNING: Path to bison has spaces in the name, malfunction is highly likely\n");
+			print("Press control-C to abort the build; it will continue in 2 seconds\n");
+			print("---------------------------------------------\n");
+			sleep(2);
+		} else {
+			print("WARNING: bison path has spaces in it. Converting to shortname form $shortbison\n");
+			$ma->{'BISON'} = $shortbison;
+		}
+		sleep(5);
+	}
+	
+	# The PostgreSQL build expects flex and bison to be on the PATH; it can't take their locations
+	# via an env var, because pgflex.pl and pgbison.pl just assume a bare command. Extract the paths
+	# and inject them into the environment.
+	add_util_to_path($ma->{'FLEX'});
+	add_util_to_path($ma->{'BISON'});
+	
+	# you can also use 7za, the standalone 7zip, here.
+	if (!defined($ma->{'7ZIP'})) {
+		find_7zip($ma) or die ("7ZIP not in MAKEARGS and not found in well known locations. See README.\n");
+	} elsif (!test_cmd('"' . $ma->{'7ZIP'} . '"')) {
+		die("7ZIP was set in MAKEARGS but could not be executed. See README.");
+	}
 };
 
 
@@ -206,7 +298,3 @@ sub cfg_read($) {
 }
 
 1;
-
-
-
-

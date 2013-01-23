@@ -60,9 +60,6 @@ TCLDIR=$(TCL_X64)
 
 default: postgresql
 
-$(WGET) $(BISON) $(FLEX) $(TOUCH):
-	$(MINGW)\bin\mingw-get install msys msys-wget msys-bison msys-flex
-	
 phony:
 
 !INCLUDE zlib.mak
