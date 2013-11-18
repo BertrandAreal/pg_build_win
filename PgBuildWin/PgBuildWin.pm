@@ -43,7 +43,7 @@ sub build($) {
 		push(@makeargs, 'PGBUILDDIR="' . File::Spec::Win32->canonpath(getcwd()) . '"');
 	}
 	# Add config make arguments
-	while (my ($k,$v) = each %$cfg->{'makeargs'}) {
+	while (my ($k,$v) = each ($cfg->{'makeargs'})) {
 		if (defined($v)) {
 			push(@makeargs, "$k=\"$v\"");
 		}
