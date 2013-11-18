@@ -54,3 +54,13 @@ postgresql-check: postgresql
 postgresql-install: postgresql
 	cd $(PGBUILDDIR)\src\tools\msvc
 	install.bat $(PGINSTALLDIR)
+	
+postgresql-fullcheck: postgresql-install
+	cd $(PGBUILDDIR)\src\tools\msvc
+	$(PGINSTALLDIR)\bin\initdb -D $(PGBUILDDIR)\temp-install
+	$(PGINSTALLDIR)\bin\pg_ctl start -w -D $(PGBUILDDIR)\temp-install -s -l $(PGBUILDDIR)\temp-install.log
+	"$(PERL_CMD)" vcregress.pl installcheck
+	rem "$(PERL_CMD)" vcregress.pl plcheck
+	"$(PERL_CMD)" vcregress.pl contribcheck
+	"$(PERL_CMD)" vcregress.pl upgradecheck
+	$(PGINSTALLDIR)\bin\pg_ctl stop -w -D $(PGBUILDDIR)\temp-install -m immediate
