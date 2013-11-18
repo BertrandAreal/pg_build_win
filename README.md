@@ -62,11 +62,26 @@ Download:
 * ActiveState TCL x64 and x86 from http://www.activestate.com/activetcl/downloads
 * Python.org python 2.7 and 3.3, both in x86 and x64 versions from http://python.org
 
-You need MinGW even for MSVC builds because you need the "flex" executable
-from it to build on x64; the version provided on the PostgreSQL site doesn't
-run on win64. These scripts also use bison, wget and touch from mingw. All 
-these tools come with msysgit too, so a future version may support using
-msysgit instead of MinGW.
+msysgit or mingw are required for "flex", "bison", "touch" and "curl". Perl
+wrappers for touch and curl may be used in future, but flex and bison are not
+negotiable for git builds. If you get an error like:
+
+    Could not find usable FLEX. Looked in MAKEARGS, git install, mingw. See README.
+     at C:/pg/pg_build_win/PgBuildWin/Config.pm line 222.
+
+then you probably need to put msysgit or Mingw/msys's bin dir on your PATH,
+or set the GIT or MINGW keys in MAKEARGS in your settings.pl to the install location
+of msysgit or mingw32, eg
+
+    $cfg { 
+		#...
+		'makeargs' => {
+			#...
+			'GIT' => 'C:\Program Files (x86)\Git',
+			#....
+	}
+	
+	
 
 I also recommend:
 

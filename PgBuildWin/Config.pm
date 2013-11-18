@@ -142,16 +142,18 @@ sub merge_defaults($$) {
 	if (defined($ma->{'USE_GIT'})) {
 		die("Don't set USE_GIT in settings.pl; use buildgit.pl instead");
 	}
+	if (!defined($ma->{'GIT'})) {
+		# Git location not specified. Try to find it. If we can't it
+		# is only fatal if USE_GIT is set, but we use it for flex/bison/
+		# etc otherwise, so we still want it.
+		$ma->{'GIT'} = find_git();
+	}
 	if ($use_git) {
 		if (!defined($ma->{'GIT'})) {
-			# Git location not specified. Try to find it; if we can't,
-			# fail.
-			$ma->{'GIT'} = find_git()
-				or die ("If USE_GIT is set you must set GIT to the location of the git executable or add git to the PATH");
+			die ("If USE_GIT is set you must set GIT to the location of the git executable or add git to the PATH");
 		}
 	} else {
 		# Unset git-related params if USE_GIT is not set
-		# but keep the GIT path; we'll use it later
 		delete $ma->{'GIT_PULL'};
 		delete $ma->{'PG_GIT_URL'};
 		delete $ma->{'PGDIR'};
