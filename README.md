@@ -222,6 +222,27 @@ CLEANING:
 * clean - remove built libraries and clean PostgreSQL working tree
 * really-clean: Remove built libraries and downloaded files, delete PostgreSQL checkout and working tree
 
+CACHING GIT
+===========
+
+Rather than making a new clone each time, you should really be using a local
+cache of PostgreSQL git.
+
+The initial clone may be created with:
+
+    md c:\pg
+    c:
+    cd c:\pg
+    "c:\Program Files (x86)\git\bin\git.exe" clone --bare --mirror git://git.postgresql.org/git/postgresql.git postgresql-git
+
+The file `Scheduled Task - Update Git Mirror.xml` can be loaded into the
+Windows Task Scheduler to regularly pull all remotes added to the git mirror.
+
+You can then set `PG_GIT_URL` in `settings.pl` to the local mirror.
+
+(Really, we should support using a `--reference` to the local mirror and still
+allow a remote URL, but that's not supported yet.)
+
 TROUBLESHOOTING
 ===============
 
