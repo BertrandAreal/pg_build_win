@@ -180,8 +180,8 @@ sub merge_defaults($$) {
 	
 	# Tools the scripts can download and install
 	# for you.
-	set_ind($ma, 'ZLIB_URL', 'http://zlib.net/zlib127.zip');
-	set_ind($ma, 'ZLIB_VERSION', '1.2.7');
+	set_ind($ma, 'ZLIB_URL', 'http://zlib.net/zlib128.zip');
+	set_ind($ma, 'ZLIB_VERSION', '1.2.8');
 
 	# Override this to specify a particular perl executable
 	set_ind($ma, 'PERL_CMD', 'perl');
