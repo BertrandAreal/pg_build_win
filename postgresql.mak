@@ -2,6 +2,14 @@
 # Build PostgreSQL
 #
 
+!IFDEF PG_GIT_REFERENCE
+PG_GIT_REFERENCE_CMDSNIP=--reference $(PG_GIT_REFERENCE)
+!ELSE
+PG_GIT_REFERENCE_CMDSNIP=
+!ENDIF
+
+
+
 !IFDEF USE_GIT
 # The horrific FOR construct is the command-shell equivalent of
 #  IF ! test "`$(GIT) ls-remote origin $(GIT_BRANCH) | cut -f 1`" == "`$(GIT) rev-parse HEAD`" THEN
@@ -9,7 +17,7 @@
 #
 $(PGBUILDDIR): phony
 	@IF NOT EXIST "$(PGBUILDDIR)" md "$(PGBUILDDIR)
-	IF NOT EXIST "$(PGBUILDDIR)\.git" "$(GIT)" clone -b "$(PG_BRANCH)" "$(PG_GIT_URL)" "$(PGBUILDDIR)"
+	IF NOT EXIST "$(PGBUILDDIR)\.git" "$(GIT)" clone $(PG_GIT_REFERENCE_CMDSNIP) -b "$(PG_BRANCH)" "$(PG_GIT_URL)" "$(PGBUILDDIR)"
 	cd $(PGBUILDDIR)
 	IF "$(GIT_PULL)" == "1" FOR /f "tokens=1" %G IN ('"$(GIT)" ls-remote origin $(PG_BRANCH)') DO FOR /f %H IN ('"$(GIT)" rev-parse HEAD') DO IF NOT "%G" == "%H" "$(GIT)" checkout --force $(PG_BRANCH) && "$(GIT)" pull --force
 !ELSE
