@@ -49,23 +49,42 @@ $urls = @{
 	)
 	'7zip'   = (
 		[System.URI]'http://downloads.sourceforge.net/sevenzip/7z920.msi',
-		$msiinstall
+		{
+			param($f)
+			Start-Process "msiexec" -ArgumentList ('/i', $f, '/qb', '/passive') -Wait
+		}
 	)
 	'python27_32' = (
 		[System.URI]'http://www.python.org/ftp/python/2.7.6/python-2.7.6.msi',
-		$msiinstall
+		{
+			param($f)
+			Start-Process "msiexec" -ArgumentList ('/i', $f, '/qb', '/passive', "TARGETDIR=${env:SystemDrive}\Python27_x86", 'ALLUSERS=1') -Wait
+		}
+
 	)
 	'python27_64' = (
 		[System.URI]'http://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi',
-		$msiinstall
+		{
+			param($f)
+			Start-Process "msiexec" -ArgumentList ('/i', $f, '/qb', '/passive', "TARGETDIR=${env:SystemDrive}\Python27_x64", 'ALLUSERS=1') -Wait
+		}
+
 	)
 	'python33_32' = (
 		[System.URI]'http://www.python.org/ftp/python/3.3.5/python-3.3.5.msi',
-		$msiinstall
+		{
+			param($f)
+			Start-Process "msiexec" -ArgumentList ('/i', $f, '/qb', '/passive', "TARGETDIR=${env:SystemDrive}\Python33_x86", 'ALLUSERS=1') -Wait
+		}
+
 	)
 	'python33_64' = (
 		[System.URI]'http://www.python.org/ftp/python/3.3.5/python-3.3.5.amd64.msi',
-		$msiinstall
+		{
+			param($f)
+			Start-Process "msiexec" -ArgumentList ('/i', $f, '/qb', '/passive', "TARGETDIR=${env:SystemDrive}\Python33_x64", 'ALLUSERS=1') -Wait
+		}
+
 	)
 	
 	'dotnet4' = (
