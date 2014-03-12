@@ -26,17 +26,23 @@ sub get_vc_info() {
 	# Try to determine the cl.exe version
 	open(CLOUTPUT, "cl 2>&1 |") or die ("Failed to exec cl.exe: $!");
 	my $clvers;
+    my $clarch;
 	my @cloutput = ();
 	while (<CLOUTPUT>) {;
 		push(@cloutput, $_);
 		if (/.*Version\s(\d{1,3})/) {
 			$clvers = $1;
-			last;
 		}
+        if (/for (?:80)?(x86|x64)/) {
+            $clarch = $1;
+        }
 	}
 	close(CLOUTPUT);
 	if (!defined($clvers)) {
-		die("cl.exe executed, but unable to determine cl.exe version from output. Output was: \n" . join("\n",@cloutput));
+		die("Unable to determine cl.exe version. Output was: \n" . join("\n",@cloutput));
+	}
+	if (!defined($clarch)) {
+		die("Unable to determine cl.exe architecture. Output was: \n" . join("\n",@cloutput));
 	}
 
 	# If we're running under a Visual Studio SDK set up with vcvarsall.bat,
@@ -45,11 +51,11 @@ sub get_vc_info() {
 	if (defined($ENV{'VCINSTALLDIR'}) && $ENV{'VCINSTALLDIR'} =~ /Microsoft Visual Studio (\d+\.?\d*)/) {
 		$vsvers = $1;
 	}
-	return ($sdkvers, $clvers, $vsvers);
+	return ($sdkvers, $clvers, $clarch, $vsvers);
 }
 
 sub detect_sdk() {
-	our ($sdkvers, $clvers, $vsvers) = get_vc_info();
+	our ($sdkvers, $clvers, $clarch, $vsvers) = get_vc_info();
 	if (defined($sdkvers)) {
 		our $verstring = "sdk${sdkvers}_cl${clvers}" . (defined($vsvers)?"_vs${vsvers}":"");
 	} else {

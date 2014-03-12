@@ -20,10 +20,8 @@
 # TARGET_CPU and CONFIGURATION are set by setenv from the winsdk. 
 # Pass /x86 or /x64 to set TARGET_CPU and /Release or /Debug to set CONFIGURATION .
 #
-# These vars are not set by vcvarsall.bat. You must set CONFIGURATION, TARGET_CPU and 
-# PLATFORMTOOLSET on the nmake command line or in the environment. PLATFORMTOOLSET
-# is rather under-documented; 
-#
+# These vars are not set by vcvarsall.bat. You must set CONFIGURATION on the
+# nmake command line or in the environment.
 LIBBUILDDIR=$(LIBDIR)\$(SDKVERSION)\$(TARGET_CPU)\$(CONFIGURATION)
 
 # By default the tools will build PostgreSQL from git in a tree it creates.

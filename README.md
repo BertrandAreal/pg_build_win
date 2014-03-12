@@ -340,7 +340,8 @@ Visual Studio 2010 and its express edition should work fine with no changes. Env
 
     "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" /?
 	
-vcvarsall.bat does not set TARGET_CPU, CONFIGURATION or PLATFORMTOOLSET so you must set these environment variables yourself.
+vcvarsall.bat does not set CONFIGURATION so you must set this environment variable yourself, to
+"Release" or "Debug".
 
 Visual Studio 11 (2012)
 ------------------

@@ -124,11 +124,8 @@ sub merge_defaults($$) {
 		unless defined($cfg->{'makeargs'});
 	my $ma = $cfg->{'makeargs'};
 	
-	set_ind($ma, 'TARGET_CPU', defined($ENV{'TARGET_CPU'}) ? $ENV{'TARGET_CPU'} : '');
+	set_ind($ma, 'TARGET_CPU', $PgBuildWin::DetectSDK::clarch);
 	my $cpu = lc($ma->{'TARGET_CPU'});
-	if (!defined($cpu) || $cpu eq '') {
-		die("TARGET_CPU isn't defined in settings.pl or the environment. See README.");
-	}
 
 	set_ind($ma, 'CONFIGURATION', defined($ENV{'CONFIGURATION'}) ? $ENV{'CONFIGURATION'} : '');
 	if ($ma->{'CONFIGURATION'} eq '') {
