@@ -32,9 +32,9 @@ $(PGBUILDDIR): phony
 postgresql: zlib $(PGBUILDDIR) $(CONFIG_PL) $(BUILDENV_PL)
 	cd $(PGBUILDDIR)\src\tools\msvc
 !IFDEF TEE
-	"$(PERL_CMD)" build.pl 2>&1 | tee build-log.log
+	"$(PERL_CMD)" build.pl $(CONFIGURATION) 2>&1 | tee build-log.log
 !ELSE
-	"$(PERL_CMD)" build.pl
+	"$(PERL_CMD)" build.pl $(CONFIGURATION)
 !ENDIF
 	
 !IFDEF USE_GIT	

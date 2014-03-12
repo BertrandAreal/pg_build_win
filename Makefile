@@ -21,7 +21,9 @@
 # Pass /x86 or /x64 to set TARGET_CPU and /Release or /Debug to set CONFIGURATION .
 #
 # These vars are not set by vcvarsall.bat. You must set CONFIGURATION on the
-# nmake command line or in the environment.
+# nmake command line or in the environment. TARGET_CPU can be set with vcvarsall
+# or by opening the appropriate command prompt in the first place.
+#
 LIBBUILDDIR=$(LIBDIR)\$(SDKVERSION)\$(TARGET_CPU)\$(CONFIGURATION)
 
 # By default the tools will build PostgreSQL from git in a tree it creates.
