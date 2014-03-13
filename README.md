@@ -31,7 +31,7 @@ and run:
 The execution policy command will permit PowerShell to run the script without
 changing any persistent settings.
 
-If you want to install them manually instead, see `manual_install.md`.
+If you want to install them manually instead, see `doc/manual_install.md`.
 
 Configure the build
 ===================
@@ -310,6 +310,14 @@ deep directory trees (130+ characters, roundabout). See:
 
 http://blog.2ndquadrant.com/postgresql-regression-tests-hanging-on-windows-check-path-depth/
 
+Build extremely slow on regression tests, flex, bison
+-----------------------------------------------------
+
+Sometimes you may notice that a build takes an extremely long time to run certain
+steps, like "flex", "bison", "diff", etc, when running builds under a Windows service
+account such as a Jenkins CI worker.
+
+If so, see `doc/slow_bison_flex.md`
 
 
 Other SDKs
@@ -326,6 +334,8 @@ Visual Studio 8 (2005)
 ------------------
 Untested.
 
+Not supported by `setupsdk.cmd`
+
 Visual Studio 9 (2008)
 ------------------
 Untested.
@@ -333,6 +343,8 @@ Untested.
 Environment setup with vcvarsall.bat:
 
     "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" /?
+
+Not supported by `setupsdk.cmd`
 
 Visual Studio 10 (2010)
 ------------------
@@ -342,6 +354,8 @@ Visual Studio 2010 and its express edition should work fine with no changes. Env
 	
 vcvarsall.bat does not set CONFIGURATION so you must set this environment variable yourself, to
 "Release" or "Debug".
+
+`SDK=vs2010ex` for `setupsdk.cmd` (express edition only)
 
 Visual Studio 11 (2012)
 ------------------
@@ -353,6 +367,19 @@ Environment setup with vcvarsall.bat or VsDevCmd.bat:
 
 Build not supported for PostgreSQL 9.2 and older; 9.3 or newer is required
 for Visual Studio 2012 build support.
+
+`SDK=vs2012ex` for `setupsdk.cmd` (express edition only)
+
+Visual Studio 12 (2013)
+-----------------------
+
+Visual Studio 2008 and its express edition should work fine with no changes. Environment setup with vcvarsall.bat.
+
+    "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" /?
+
+Only PostgreSQL 9.3 and newer support building with Visual Studio 2013.
+
+`SDK=vs2013ex` for `setupsdk.cmd` (express edition only)
 
 Microsoft Platform SDK for Windows XP SP2 
 -----------------------------------------
@@ -366,6 +393,8 @@ Known working, recommended. Environment setup with setenv.cmd.
 	
 Known compatibility issues with Visual Studio 2010, .NET 4.5, and Visual Studio 2012. See TROUBLESHOOTING.
 
+`SDK=winsdk71` for `setupsdk.cmd`
+
 Microsoft Windows SDK for Windows 8 and .NET Framework 4.5 (v8.0a)
 ------------------------------------------------------------------
 You cannot compile PostgreSQL with this SDK because this version of the SDK does not include standalone compilers and build tools.
@@ -375,7 +404,7 @@ You must use Visual Studio 2012 or the express edition instead.
 Obsolete versions
 -----------------
 
-The following obsolete SDK and Visual Studio releases are not supported and will never be supported by pg_build_win. Patches adding support will be rejected.
+The following obsolete SDK and Visual Studio releases are not supported and will never be supported by `pg_build_win`. Patches adding support will be rejected.
 
 * Visual Studio 97
 * Visual Studio 6

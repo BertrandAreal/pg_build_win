@@ -49,4 +49,5 @@ diff.exe sitting there for ages.
 
 If so, you will need to reconfigure the Jenkins service so it runs under a user
 account other than the default NT service account. Simply setting "Allow this
-service to interact with the desktop" is not enough.
+service to interact with the desktop" is not enough. The new user must not be
+an administrator, otherwise PostgreSQL will complain.
