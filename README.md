@@ -31,13 +31,7 @@ and run:
 The execution policy command will permit PowerShell to run the script without
 changing any persistent settings.
 
-If you use this script you can skip the SDK download and tools download/install
-sections.
-
-Manually installing the tools and SDKs
-======================================
-
-See `manual_install.md`
+If you want to install them manually instead, see `manual_install.md`.
 
 Configure the build
 ===================
@@ -149,26 +143,32 @@ SET UP VISUAL STUDIO ENVIRONMENT
 ================================
 	
 Set up your Visual Studio or Windows SDK environment for the build target you
-want.  Either use the Start menu option to launch a suitable prompt if you want
-the default settings, or preferably open a new ordinary Command Prompt and use
-`SetEnv.cmd` (SDK) or `vcvars.bat` (Studio) to set the environment up.
+want.  Either use the Start menu option to launch a suitable visual studio / sdk
+prompt, or use the `setupsdk.cmd` script. For one-off use, it's easiest to just
+launch a Visual Studio command prompt environment, e.g "VS2012 x86 Native Tools
+Command Prompt" from the Start menu or Visual Studio Tools folder.
 
-For windows SDK 7.1 32-bit release builds you'd use:
+If you want to use the script `setupsdk.cmd` instead, use an ordinary command
+crompt (`cmd.exe`). The script, when run, will detect the location of your
+requested Visual Studio or Windows SDK and call the appropriate `SetEnv.cmd` or
+`vcvarsall.bat` script to set up the environment for you after you set the
+variable TA to the target architecture (x86 or x64) and set the variable SDK to
+the desired SDK name. Current options are:
 
-    "c:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.Cmd" /x86 /release /xp
-	
-For options:
+    winsdk71    Microsoft Windows SDK 7.1
+    vs2010ex    Visual Studio 2010 Express (usually x86 only)
+    vs2012ex    Visual Studio 2012 Express
+    vs2013ex    Visual Studio 2013 Express
 
-    "c:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.Cmd" /?
+(Non-Express Visual Studio versions aren't supported yet, but should be trivial
+to add if you take a look at the script).
 
-The main options are "/x86" vs "/x64" and "/Debug" vs "/Release".
-You probably want to pass "/xp" for 32-bit builds and "/2008" for 64-bit builds.
+Example usage:
 
-`vcvarsall.bat` for Visual Studio builds works a bit differently to the Windows
-SDK 7.1 `SetEnv.cmd` script. They do not offer any control of the debug/release
-state (`Configuration`) or the target platform; the only argument they accept
-is an arcitecture. You must set the environment variables for `TARGET` and
-`Configuration` yourself.
+    SET TA=x86
+    SET SDK=vs2012ex
+    call setupsdk.cmd
+    
 
 BUILD
 =====
