@@ -16,6 +16,12 @@
 :: SDK: Windows SDK to use. See IF statements below for supported SDKs
 :: PGBW: Location of pg_build_win directory
 ::
+:: You could use it in a Jenkins matrix build with a simple script like:
+::
+::     SET PGBW=C:\pg\pg_build_win
+::     call %PGBW%\jenkins.cmd
+::
+:: where you use matrix variables to set SDK, BT, and TA
 
 IF NOT DEFINED BT (
     ECHO Variable BT - Build Type - is not defined
@@ -33,7 +39,7 @@ IF NOT DEFINED PGBW (
 SET PATH=C:\Perl64\site\bin;C:\Perl64\bin;C:\Perl\site\bin;C:\Perl\bin;C:\Windows\System32
 
 call %PGBW%\setupsdk.cmd && GOTO :RUN
-ECHO Failed to set up SDK with setupsdk_only.cmd
+ECHO Failed to set up SDK with setupsdk.cmd
 GOTO :ERROR
 
 :RUN

@@ -48,7 +48,8 @@ IF /I %SDK%==winsdk71 (
     FOR /F "usebackq tokens=2,* skip=2" %%L IN (
         `reg query "HKLM\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.1" /v InstallationFolder`
     ) DO SET sdkpath=%%M
-    call "%%sdkpath%%\bin\setenv.cmd" /%TA% /%BT% && GOTO :EOF
+    call "%%sdkpath%%\bin\setenv.cmd" /%TA% /%BT%
+    GOTO :EOF
 )
 IF /I %SDK%==vs2010ex (
     SET SDKREGKEY=%VS2010EXREG% && GOTO :LOADVCENV
