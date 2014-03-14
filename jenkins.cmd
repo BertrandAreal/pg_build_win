@@ -38,9 +38,10 @@ IF NOT DEFINED PGBW (
 
 SET PATH=C:\Perl64\site\bin;C:\Perl64\bin;C:\Perl\site\bin;C:\Perl\bin;C:\Windows\System32
 
-call %PGBW%\setupsdk.cmd && GOTO :RUN
-ECHO Failed to set up SDK with setupsdk.cmd
-GOTO :ERROR
+call %PGBW%\setupsdk.cmd
+:: Should really test errorlevel here or use &&, but seem to have issues under
+:: Jenkins control when doing so.
+GOTO :RUN
 
 :RUN
 SET PGPORT=50533

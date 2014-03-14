@@ -41,20 +41,28 @@ Setup Axes
 -------
 
 Create a Slaves axis "SL_OS". In this axis, check only the "windows" slave.
-That restricts the build jobs to running only on nodes running Windows.
+That restricts the build jobs to running only on nodes running Windows. You
+might choose multiple Windows host OSes if you want, and possibly set up
+dependencies in the combination filter if some hosts have some SDKs and others
+have other SDKs. For the single-node case, just checking "Windows" is enough;
+the idea is simply to stop the sub-builds being invoked on non-Windows workers.
 
-Create a User-defined axis "BT" with options "debug release".
+This is required even if you restrict the matrix master build to the windows
+node, as the sub-builds do not inherit that restriction.
+
+Create a User-defined axis "BT" with options "debug release". This is your
+build type.
 
 Create a User-defined axis "SDK" with options "winsdk71 vs2010ex vs2012ex
-vs2013ex" (or whatever subset of SDKs you have installed). These are the labels
-recognised by `setupsdk.cmd`.
+vs2013ex". These are the labels recognised by `setupsdk.cmd`.
 
 To limit the number of builds, set a combination filter, something like:
 
     (BT=="release") && (TA=="x86").implies(SDK=="winsdk71") && (TA=="x64").implies(SDK=="vs2012ex")
 
 which will produce an x86 build with winsdk 7.1 suitable for XP and above, and
-an x64 build with VS 2012 Express suitable for Vista and above.
+an x64 build with VS 2012 Express suitable for Vista and above. Adjust if your
+installed set of SDKs is different.
 
 Build name
 -------
