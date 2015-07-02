@@ -29,11 +29,11 @@ $urls = @{
 		{ param($f); Start-Process $f -ArgumentList ('/silent') -Wait }
 	)
 	'perl32' = (
-		[System.URI]'http://downloads.activestate.com/ActivePerl/releases/5.16.3.1603/ActivePerl-5.16.3.1603-MSWin32-x86-296746.msi',
+		[System.URI]'http://downloads.activestate.com/ActivePerl/releases/5.20.2.2001/ActivePerl-5.20.2.2001-MSWin32-x86-64int-298913.msi  ',
 		{ param($f); Start-Process "msiexec" -ArgumentList ('/i', "$f", '/qb', '/passive', "PERL_PATH=$perlonpath", "PERL_EXT=$perlonpath") -Wait }
 	)
 	'perl64' = (
-		[System.URI]'http://downloads.activestate.com/ActivePerl/releases/5.16.3.1603/ActivePerl-5.16.3.1603-MSWin32-x64-296746.msi',
+		[System.URI]'http://downloads.activestate.com/ActivePerl/releases/5.20.2.2001/ActivePerl-5.20.2.2001-MSWin32-x64-298913.msi',
 		{ param($f); Start-Process "msiexec" -ArgumentList ('/i', "$f", '/qb', '/passive', "PERL_PATH=$perlonpath", "PERL_EXT=$perlonpath") -Wait }
 	)
 	# Argh, the new mingw installer doesn't have a silent mode
@@ -174,7 +174,7 @@ $installlist = (
 # Also make decisions about 32-bit vs 64-bit tools
 # to install.
 $arch = (Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture).OSArchitecture
-if ( $arch -eq "64-bit" )
+if ( $arch -eq "64-bit" ) 
 {
 	($url, $b) = $urls.perl64
 	$fn = $filenames.perl64

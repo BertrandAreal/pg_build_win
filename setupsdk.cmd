@@ -30,9 +30,9 @@ SET WOW=
 IF /I %PROCESSOR_ARCHITECTURE%==AMD64 SET WOW=Wow6432Node\
 
 :: These paths point to the Common7\IDE\ subdir
-SET VS2010EXREG=HKLM\SOFTWARE\%WOW%Microsoft\VCExpress\10.0
-SET VS2012EXREG=HKLM\SOFTWARE\%WOW%Microsoft\WDExpress\11.0
-SET VS2013EXREG=HKLM\SOFTWARE\%WOW%Microsoft\WDExpress\12.0
+SET VS2010EXREG=HKLM\SOFTWARE\%WOW%Microsoft\VisualStudio\10.0
+SET VS2012EXREG=HKLM\SOFTWARE\%WOW%Microsoft\VisualStudio\11.0
+SET VS2013EXREG=HKLM\SOFTWARE\%WOW%Microsoft\VisualStudio\12.0
 
 ::
 :: The Visual Studio installs all put their scripts in Program Files (x86).
@@ -69,6 +69,7 @@ GOTO :ERROR
 
 ::Function LOADVCENV. Expects %SDKREGKEY%, runs vcvarsall
 :LOADVCENV
+ECHO %SDKREGKEY%
 FOR /F "usebackq tokens=2,* skip=2" %%L IN (
     `reg query "%SDKREGKEY%" /v InstallDir`
 ) DO SET sdkpath=%%M
