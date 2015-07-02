@@ -53,9 +53,6 @@ GOTO :RUN
 
 :: TODO run installcheck, plcheck, etc too
 
-cd C:\test\postgres
-::%PGBW%/buildcwd.pl postgresql
-cd C:\test\postgres
 %PGBW%/buildcwd.pl postgresql-install
 
 :ERROR
