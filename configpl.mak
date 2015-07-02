@@ -20,8 +20,8 @@ our $$config = {
 	ldap    => 1,        # --with-ldap
 	nls     => undef,    # --enable-nls=<path>
 	tcl     => '$(TCLDIR)' || undef,    # --with-tls=<path>
-	perl    => '$(PERLDIR)' || undef,    # --with-perl
-	python  => '$(PYTHON2DIR)' || undef,    # --with-python=<path>
+	perl    => undef,    # --with-perl
+	python  => undef,    # --with-python=<path>
 	krb5    => undef,    # --with-krb5=<path>
 	openssl => undef,    # --with-ssl=<path>
 	uuid    => undef,    # --with-ossp-uuid

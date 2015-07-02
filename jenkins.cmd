@@ -44,14 +44,19 @@ call %PGBW%\setupsdk.cmd
 GOTO :RUN
 
 :RUN
-SET PGPORT=50533
-IF /I "%TA"=="x86" SET /A PGPORT=PGPORT+1
-IF /I "%BT"=="release" SET /A PGPORT=PGPORT+2
-%PGBW%\buildcwd.pl postgresql-check postgresql-install && GOTO END
-
-IF EXIST src\test\regress\regression.diffs type src\test\regress\regression.diffs
+::SET PGPORT=50533
+::IF /I "%TA"=="x86" SET /A PGPORT=PGPORT+1
+::IF /I "%BT"=="release" SET /A PGPORT=PGPORT+2
+::%PGBW%\buildcwd.pl postgresql-check postgresql-install && GOTO END
+::
+::IF EXIST src\test\regress\regression.diffs type src\test\regress\regression.diffs
 
 :: TODO run installcheck, plcheck, etc too
+
+cd C:\test\postgres
+::%PGBW%/buildcwd.pl postgresql
+cd C:\test\postgres
+%PGBW%/buildcwd.pl postgresql-install
 
 :ERROR
 ECHO BUILD ERROR
