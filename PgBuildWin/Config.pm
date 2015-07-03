@@ -284,7 +284,7 @@ sub cfg_read_file($$) {
 #
 sub cfg_read($) {
 	my $use_git = $_[0];
-	my $pg_build_win_dir = $Bin;
+	my $pg_build_win_dir = Win32::GetShortPathName($Bin);
 	my $settingspl = catfile( ($pg_build_win_dir), 'settings.pl');
 	if (! -e $settingspl) {
 		print "Expected to find settings.pl at $settingspl.\n";

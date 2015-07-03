@@ -40,7 +40,7 @@ sub build($) {
 	if ($use_git) {
 		push(@makeargs, 'USE_GIT=1');
 	} else {
-		push(@makeargs, 'PGBUILDDIR="' . File::Spec::Win32->canonpath(getcwd()) . '"');
+		push(@makeargs, 'PGBUILDDIR="' . File::Spec::Win32->canonpath(Win32::GetShortPathName(getcwd())) . '"');
 	}
 	# Add config make arguments
 	while (my ($k,$v) = each ($cfg->{'makeargs'})) {

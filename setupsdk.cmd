@@ -1,3 +1,4 @@
+
 @echo off
 ::
 :: This script sources the appropriate SDK environment variables script given an SDK
@@ -51,6 +52,7 @@ IF /I %SDK%==winsdk71 (
     call "%%sdkpath%%\bin\setenv.cmd" /%TA% /%BT%
     GOTO :EOF
 )
+
 IF /I %SDK%==vs2010ex (
     SET SDKREGKEY=%VS2010EXREG% && GOTO :LOADVCENV
 )
@@ -69,15 +71,16 @@ GOTO :ERROR
 
 ::Function LOADVCENV. Expects %SDKREGKEY%, runs vcvarsall
 :LOADVCENV
-ECHO %SDKREGKEY%
+
 FOR /F "usebackq tokens=2,* skip=2" %%L IN (
     `reg query "%SDKREGKEY%" /v InstallDir`
 ) DO SET sdkpath=%%M
-call "%sdkpath%\..\..\VC\vcvarsall.bat" %vcarch% && GOTO :EOF
+SET sdkpath=%sdkpath:~0,-1%
+call "%sdkpath%\..\..\VC\vcvarsall.bat" %vcarch% && GOTO :END
 ECHO Failed to configure SDK %SDK%
 GOTO :ERROR
 
 :ERROR
 EXIT /B 1
 
-:EOF
+:END
