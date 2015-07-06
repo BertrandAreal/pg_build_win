@@ -6,4 +6,3 @@ SET BT=release
 SET SDK=vs2013ex
 cd "%PGBW%"
 call "%PGBW%\jenkins.cmd"
-::cmd  /c start "" /d"%PGBW%\" "jenkins.cmd" 

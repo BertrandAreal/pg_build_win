@@ -23,6 +23,8 @@
 ::
 :: where you use matrix variables to set SDK, BT, and TA
 
+
+
 IF NOT DEFINED BT (
     ECHO Variable BT - Build Type - is not defined
     GOTO :ERROR
@@ -53,12 +55,11 @@ GOTO :RUN
 
 :: TODO run installcheck, plcheck, etc too
 cd ../postgres
-"%PGBW%\buildcwd.pl" postgresql-install
+"%PGBW%\buildcwd.pl" postgresql-install && GOTO END
 
 :ERROR
-ECHO BUILD ERROR
 EXIT /B 1
 
 :END
-ECHO Build OK
+cd "%PGBW%"
 EXIT /B 0
