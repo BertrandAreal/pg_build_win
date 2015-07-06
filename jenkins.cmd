@@ -55,6 +55,7 @@ GOTO :RUN
 
 :: TODO run installcheck, plcheck, etc too
 cd ../postgres
+"%PGBW%\buildcwd.pl" postgresql-clean
 "%PGBW%\buildcwd.pl" postgresql-install && GOTO END
 
 :ERROR
